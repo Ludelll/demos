@@ -247,7 +247,6 @@
 </head>
 <body>
 
-<div class="agencia" id="agencia" hidden></div>
 
 <header class="topo" id="topo">
   <div class="wrap topo-in">
@@ -431,7 +430,7 @@
   ],
   "fonte": "exemplo",
   "agencia": {
-    "nome": "",
+    "nome": "Lucas",
     "whatsapp": "5512982117988",
     "projeto_pages": "previas-sites"
   }
@@ -519,19 +518,15 @@ function iniciar(dados) {
   $("#marca-nome").textContent = D.nome;
   window.addEventListener("scroll", () => $("#topo").classList.toggle("rolou", scrollY > 8), { passive: true });
 
-  // Faixa da agência (só aparece em demonstração)
+  // Crédito discreto no rodapé (sem faixa no topo): no exemplo avisa que é projeto conceito; na prévia, para quem foi feita
   const ag = D.agencia || {};
-  if (D.fonte) {
-    const faixa = $("#agencia");
-    faixa.append(el("span", {}, ehExemplo
-      ? "Clínica fictícia de exemplo. Com os dados do seu negócio no Google, o site fica assim, mas com o seu nome, suas fotos e suas avaliações."
-      : `Demonstração feita para ${D.nome} com informações públicas${D.fonte === "google" ? " do Google" : ""}. Os tratamentos listados são exemplos.`));
-    if (ag.whatsapp) {
-      const link = el("a", { href: wa(ag.whatsapp, `Oi! Vi a demonstração do site${ehExemplo ? "" : " da " + D.nome} e quero saber mais.`), target: "_blank", rel: "noopener" }, `Quero este site${ag.nome ? " · " + ag.nome : ""}`);
-      link.insertAdjacentHTML("beforeend", ICONES.seta);
-      faixa.append(link);
-    }
-    faixa.hidden = false;
+  const noGoogle = ehExemplo ? "" : " no Google"; // avaliações do exemplo são ilustrativas: não atribuir ao Google
+  function credito_autor() {
+    const quem = ag.nome || "Lucas";
+    const txt = ehExemplo ? `Projeto conceito com uma clínica fictícia, feito por ${quem}.` : `Prévia criada por ${quem} para ${D.nome}.`;
+    const span = el("span", {}, txt + " ");
+    if (ag.whatsapp) span.append(el("a", { href: wa(ag.whatsapp, ehExemplo ? "Oi, Lucas! Vi o site que você fez e queria conversar sobre um para o meu consultório." : `Oi, Lucas! Vi a prévia do site da ${D.nome}.`), target: "_blank", rel: "noopener" }, "Falar com ele"));
+    return span;
   }
 
   // Abertura: nome palavra a palavra (para a animação), sub-linha abaixo
@@ -540,7 +535,7 @@ function iniciar(dados) {
   $("#sub").textContent = `${nicho.rotulo}${local ? " em " + local : ""}.`;
   if (D.nota) {
     const nl = $("#nota-linha");
-    nl.append(estrelas(D.nota), el("b", { class: "num" }, fmtNota(D.nota)), el("span", {}, `${D.totalAvaliacoes.toLocaleString("pt-BR")} ${D.totalAvaliacoes === 1 ? "avaliação" : "avaliações"} no Google`));
+    nl.append(estrelas(D.nota), el("b", { class: "num" }, fmtNota(D.nota)), el("span", {}, `${D.totalAvaliacoes.toLocaleString("pt-BR")} ${D.totalAvaliacoes === 1 ? "avaliação" : "avaliações"}${noGoogle}`));
     nl.hidden = false;
   }
   const ctas = $("#ctas");
@@ -564,15 +559,15 @@ function iniciar(dados) {
   if (D.video) {
     vit.append(el("figure", { class: "foto-capa video" }, videoHero()));
     if (melhor) vit.append(el("figure", { class: "cartao-aval" }, el("p", {}, `“${curta(melhor.texto)}”`),
-      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "avaliação fictícia" : "no Google"))));
+      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "" : "no Google"))));
   } else if (fotos.length) {
     vit.append(el("figure", { class: "foto-capa" }, el("img", { src: fotos[0].url, alt: `Foto de ${D.nome}`, referrerpolicy: "no-referrer" })),
       el("span", { class: "credito" }, credito(fotos[0])));
     if (melhor) vit.append(el("figure", { class: "cartao-aval" }, el("p", {}, `“${curta(melhor.texto)}”`),
-      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, "no Google"))));
+      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "" : "no Google"))));
   } else if (melhor) {
     vit.append(el("figure", { class: "painel-cit" }, el("blockquote", {}, `“${curta(melhor.texto)}”`),
-      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "avaliação fictícia" : "no Google"))));
+      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "" : "no Google"))));
   } else {
     const dl = el("dl");
     if (intHoje) dl.append(el("div", {}, el("dt", {}, "Hoje"), el("dd", {}, intHoje.length ? textoHorario(hoje) : "Fechado")));
@@ -604,7 +599,7 @@ function iniciar(dados) {
   if (avals.length) {
     $("#avaliacoes").hidden = false;
     if (D.nota) $("#resumo-aval").append(el("span", { class: "grande num" }, fmtNota(D.nota)),
-      el("div", {}, estrelas(D.nota), el("small", {}, `Média de ${D.totalAvaliacoes.toLocaleString("pt-BR")} avaliações no Google`)));
+      el("div", {}, estrelas(D.nota), el("small", {}, `Média de ${D.totalAvaliacoes.toLocaleString("pt-BR")} avaliações${noGoogle}`)));
     else $("#resumo-aval").hidden = true;
     if (avals.length - 1 >= 3) $("#avals").classList.add("tres");
     const grade = avals.filter(a => a !== melhor);
@@ -622,7 +617,7 @@ function iniciar(dados) {
       return art;
     }));
     const fonte = $("#fonte-aval");
-    fonte.append(el("span", {}, ehExemplo ? "Avaliações fictícias, só para ilustrar." : "Avaliações publicadas por pacientes no Google."));
+    fonte.append(el("span", {}, ehExemplo ? "Avaliações ilustrativas deste projeto conceito." : "Avaliações publicadas por pacientes no Google."));
     if (D.maps && !ehExemplo) fonte.append(el("a", { href: D.maps, target: "_blank", rel: "noopener" }, "Ver todas no Google Maps"));
   }
 
@@ -652,7 +647,8 @@ function iniciar(dados) {
   // Rodapé e barra do celular
   $("#r-nome").textContent = D.nome;
   $("#r-end").textContent = [D.endereco, D.telefone].filter(Boolean).join(" · ");
-  $("#r-fonte").textContent = ehExemplo ? `Clínica fictícia, criada para demonstração.${creditosLivres(fotos)}` : D.fonte === "google" ? "Nota, avaliações e fotos: Google." : "Nota e avaliações: Google.";
+  $("#r-fonte").append(credito_autor(), ehExemplo ? creditosLivres(fotos) : D.fonte === "google" ? " Nota, avaliações e fotos: Google." : " Nota e avaliações: Google.");
+  if (ehExemplo) $("#h-aval").textContent = "O que dizem os pacientes";
   const barra = $("#barra");
   barra.append(el("a", { class: "b-agendar", href: "#agendar" }, "Agendar horário"));
   if (contato) barra.append(botaoHtml(contato.href, contato.rotulo, contato.ico, "b-contato", false, contato.tipo === "wa"));

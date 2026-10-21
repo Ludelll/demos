@@ -271,7 +271,6 @@
 </head>
 <body>
 
-<div class="agencia" id="agencia" hidden></div>
 
 <header class="topo">
   <a href="#" class="marca"><i aria-hidden="true"></i><span id="marca-nome"></span></a>
@@ -453,7 +452,7 @@
   ],
   "fonte": "exemplo",
   "agencia": {
-    "nome": "",
+    "nome": "Lucas",
     "whatsapp": "5512982117988",
     "projeto_pages": "previas-sites"
   }
@@ -542,20 +541,15 @@ function iniciar(dados) {
   $("#marca-nome").textContent = D.nome;
   $("#e-clinica").textContent = D.nome;
 
-  // Faixa da agência (só aparece em demonstração)
+  // Crédito discreto no rodapé (sem faixa no topo): no exemplo avisa que é projeto conceito; na prévia, para quem foi feita
   const ag = D.agencia || {};
-  if (D.fonte) {
-    const faixa = $("#agencia");
-    const txt = ehExemplo
-      ? "Clínica fictícia de exemplo. Com os dados do seu negócio no Google, o site fica assim, mas com o seu nome, suas fotos e suas avaliações."
-      : `Demonstração feita para ${D.nome} com informações públicas${D.fonte === "google" ? " do Google" : ""}. Os tratamentos listados são exemplos.`;
-    faixa.append(el("span", {}, txt));
-    if (ag.whatsapp) {
-      const link = el("a", { class: "agencia-link", href: wa(ag.whatsapp, `Oi! Vi a demonstração do site${ehExemplo ? "" : " da " + D.nome} e quero saber mais.`), target: "_blank", rel: "noopener" }, `Quero este site${ag.nome ? " · " + ag.nome : ""}`);
-      link.insertAdjacentHTML("beforeend", ICONES.seta);
-      faixa.append(link);
-    }
-    faixa.hidden = false;
+  const noGoogle = ehExemplo ? "" : " no Google"; // avaliações do exemplo são ilustrativas: não atribuir ao Google
+  function credito_autor() {
+    const quem = ag.nome || "Lucas";
+    const txt = ehExemplo ? `Projeto conceito com uma clínica fictícia, feito por ${quem}.` : `Prévia criada por ${quem} para ${D.nome}.`;
+    const span = el("span", {}, txt + " ");
+    if (ag.whatsapp) span.append(el("a", { href: wa(ag.whatsapp, ehExemplo ? "Oi, Lucas! Vi o site que você fez e queria conversar sobre um para o meu consultório." : `Oi, Lucas! Vi a prévia do site da ${D.nome}.`), target: "_blank", rel: "noopener" }, "Falar com ele"));
+    return span;
   }
 
   // Abertura
@@ -575,7 +569,7 @@ function iniciar(dados) {
   if (D.nota) {
     celulas++;
     fx.append(el("div", { class: "celula" },
-      el("span", { class: "rotulo" }, "Nota no Google"),
+      el("span", { class: "rotulo" }, ehExemplo ? "Nota dos pacientes" : "Nota no Google"),
       el("div", { class: "nota-linha" },
         el("span", { class: "nota-num num" }, fmtNota(D.nota)),
         el("span", { class: "nota-meta" }, estrelas(D.nota), el("br"), `${D.totalAvaliacoes.toLocaleString("pt-BR")} ${D.totalAvaliacoes === 1 ? "avaliação" : "avaliações"}`))));
@@ -630,7 +624,8 @@ function iniciar(dados) {
       return art;
     }));
     const fonte = $("#fonte-aval");
-    fonte.append(ehExemplo ? "Avaliações fictícias, só para ilustrar." : "Avaliações publicadas por pacientes no Google.");
+    fonte.append(ehExemplo ? "Avaliações ilustrativas deste projeto conceito." : "Avaliações publicadas por pacientes no Google.");
+    if (ehExemplo) $("#h-aval").textContent = "O que dizem os pacientes";
     if (D.maps && !ehExemplo) fonte.append(el("a", { href: D.maps, target: "_blank", rel: "noopener" }, "Ver todas no Google Maps"));
   }
 
@@ -662,7 +657,7 @@ function iniciar(dados) {
   // Rodapé e barra do celular
   $("#rodape").append(
     el("span", {}, el("b", {}, D.nome), D.endereco ? " · " + D.endereco : ""),
-    el("span", {}, ehExemplo ? `Clínica fictícia.${creditosLivres(fotos)}` : D.fonte === "google" ? "Nota, avaliações e fotos: Google." : "Nota e avaliações: Google."));
+    el("span", {}, credito_autor(), ehExemplo ? creditosLivres(fotos) : D.fonte === "google" ? " Nota, avaliações e fotos: Google." : " Nota e avaliações: Google."));
   const barra = $("#barra");
   const bA = el("a", { class: "b-agendar", href: "#agendar" }, "Agendar");
   barra.append(bA);
