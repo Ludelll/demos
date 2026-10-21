@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><!-- demo de prospecção: fora do Google até a clínica fechar -->
+<title>Clínica</title>
+<meta name="description" content="Agende pelo site ou pelo WhatsApp. Tratamentos, avaliações, horários e endereço.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&family=Spectral:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fundo: #ffffff;
+    --texto: #1c1f22;
+    --texto-2: #5a6168;
+    --linha: #e4e6e8;
+    --marca: #7d2a45;
+    --marca-texto: #ffffff;
+    --marca-suave: color-mix(in srgb, var(--marca) 7%, #fff);
+    --marca-media: color-mix(in srgb, var(--marca) 16%, #fff);
+    --sombra: 0 2px 4px rgb(20 24 28 / .04), 0 18px 40px -18px rgb(20 24 28 / .22);
+    --mg: 20px;
+    --largura: 1200px;
+    --topo: 68px;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
+    --sans: "Albert Sans", "Helvetica Neue", Arial, sans-serif;
+    --sai: cubic-bezier(.16, 1, .3, 1);
+    color-scheme: light;
+  }
+  @media (min-width: 760px) { :root { --mg: 40px; --topo: 76px; } }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topo) + 12px); scrollbar-color: var(--marca-media) var(--fundo); }
+  body { margin: 0; background: var(--fundo); color: var(--texto); font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; caret-color: var(--marca); }
+  ::selection { background: var(--marca-media); color: var(--texto); }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  :focus-visible { outline: 2px solid var(--marca); outline-offset: 3px; border-radius: 6px; }
+  h1, h2, h3, p, figure, blockquote { margin: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+  .wrap { width: min(var(--largura), 100% - 2 * var(--mg)); margin-inline: auto; }
+  [hidden] { display: none !important; }
+
+  /* Faixa da agência */
+  .agencia { background: var(--texto); color: #f1f2f3; font-size: 14px; line-height: 1.45; padding: 10px var(--mg); display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between; align-items: center; }
+  .agencia a { color: #fff; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .agencia svg { width: 16px; height: 16px; }
+
+  /* Topo */
+  .topo { position: sticky; top: 0; z-index: 30; background: rgb(255 255 255 / .94); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid transparent; transition: border-color .3s, box-shadow .3s; }
+  .topo.rolou { border-color: var(--linha); box-shadow: 0 8px 24px -20px rgb(20 24 28 / .4); }
+  .topo-in { height: var(--topo); display: flex; align-items: center; gap: 24px; }
+  .marca-nome { font: 400 21px/1.15 var(--serif); text-decoration: none; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topo nav { display: none; gap: 28px; font-size: 15px; font-weight: 500; }
+  .topo nav a { text-decoration: none; color: var(--texto-2); transition: color .2s; }
+  .topo nav a:hover { color: var(--marca); }
+  @media (min-width: 1000px) { .topo nav { display: flex; } }
+  @media (max-width: 999px) { .topo .btn-topo { display: none; } }
+  @media (max-width: 759px) { .ctas { flex-direction: column; } .ctas .btn { width: 100%; } }
+
+  /* Botões */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border-radius: 999px; font: 600 16px var(--sans); text-decoration: none; border: 0; cursor: pointer; transition: background .25s, color .25s, box-shadow .25s, transform .12s; white-space: nowrap; }
+  .btn:active:not(:disabled) { transform: scale(.97); }
+  .btn svg { width: 18px; height: 18px; transition: transform .3s var(--sai); }
+  .btn:hover svg.seta { transform: translateX(4px); }
+  .btn-marca { background: var(--marca); color: var(--marca-texto); box-shadow: 0 1px 2px rgb(20 24 28 / .08), 0 10px 22px -14px rgb(20 24 28 / .45); }
+  .btn-marca:hover { background: color-mix(in srgb, var(--marca) 86%, #000); }
+  .btn-claro { background: var(--fundo); color: var(--texto); box-shadow: inset 0 0 0 1px var(--linha); }
+  .btn-claro:hover { box-shadow: inset 0 0 0 1px var(--marca); color: var(--marca); }
+  .btn-topo { min-height: 44px; padding: 0 20px; font-size: 15px; }
+
+  /* Abertura */
+  .abertura { padding: 40px 0 56px; }
+  .abertura-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: center; }
+  .nome { font: 300 clamp(40px, 6vw, 76px)/1.04 var(--serif); letter-spacing: -.015em; text-wrap: balance; }
+  .nome.longo { font-size: clamp(34px, 4.4vw, 58px); }
+  .sub { margin-top: 18px; font-size: 18px; color: var(--texto-2); }
+  .nota-linha { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 16px; }
+  .nota-linha b { font-weight: 700; }
+  .estrelas { position: relative; display: inline-flex; gap: 2px; color: #a67c12; }
+  .estrelas svg { width: 17px; height: 17px; flex: none; }
+  .estrelas-base, .estrelas-cheias { display: inline-flex; gap: 2px; }
+  .estrelas-cheias { position: absolute; inset: 0; }
+  .ctas { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .hoje-linha { margin-top: 22px; display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--texto-2); }
+  .hoje-linha i { width: 8px; height: 8px; border-radius: 50%; background: #9aa1a8; }
+  .hoje-linha.aberto i { background: #2f8a55; }
+  .hoje-linha b { color: var(--texto); font-weight: 600; }
+
+  .vitrine { position: relative; }
+  .foto-capa { aspect-ratio: 4 / 5; border-radius: 28px; overflow: hidden; background: var(--marca-suave); }
+  .foto-capa img { width: 100%; height: 100%; object-fit: cover; }
+  /* vídeo do hero (odonto): o fundo do vídeo é a cor da marca, então "contain" nunca mostra borda */
+  .foto-capa.video { background: var(--marca); }
+  .foto-capa video { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .foto-capa.video video { transform: translateY(-9%) scale(.86); } /* o cartão da avaliação não cobre as raízes */
+  .credito { position: absolute; right: 14px; top: 14px; font-size: 12px; color: #fff; background: rgb(20 24 28 / .55); padding: 4px 10px; border-radius: 999px; }
+  .cartao-aval { position: absolute; left: -28px; bottom: 28px; width: min(340px, 82%); background: #fff; border-radius: 20px; padding: 20px 22px; box-shadow: var(--sombra); }
+  .cartao-aval p { font: 300 italic 19px/1.4 var(--serif); }
+  .cartao-aval footer { margin-top: 12px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--texto-2); }
+  .cartao-aval footer b { color: var(--texto); font-weight: 600; }
+  .painel-cit { border-radius: 28px; background: var(--marca-suave); padding: clamp(28px, 4vw, 56px); display: flex; flex-direction: column; justify-content: center; gap: 22px; min-height: 100%; }
+  .painel-cit blockquote { font: 300 italic clamp(24px, 2.6vw, 34px)/1.3 var(--serif); }
+  .painel-cit footer { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--texto-2); }
+  .painel-cit footer b { color: var(--texto); font-weight: 600; }
+  .painel-cit dl { margin: 0; display: grid; gap: 18px; }
+  .painel-cit dt { font-size: 14px; color: var(--texto-2); }
+  .painel-cit dd { margin: 2px 0 0; font: 400 22px/1.3 var(--serif); }
+  @media (max-width: 999px) { .cartao-aval { left: 14px; bottom: 14px; } .foto-capa { aspect-ratio: 4 / 3.4; } }
+  @media (min-width: 1000px) {
+    .abertura { padding: 56px 0 80px; }
+    .abertura-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 64px; }
+  }
+
+  /* Seções */
+  .secao { padding: 72px var(--mg); }
+  .secao > .wrap { width: min(var(--largura), 100%); }
+  .secao.tinta { background: var(--marca-suave); }
+  .titulo { font: 300 clamp(34px, 4.4vw, 52px)/1.1 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
+  .titulo-sub { margin-top: 12px; color: var(--texto-2); font-size: 17px; max-width: 52ch; }
+  .cabeca { margin-bottom: 40px; }
+  @media (min-width: 1000px) { .secao { padding: 104px var(--mg); } .cabeca { margin-bottom: 52px; } }
+
+  /* Tratamentos: cardápio de spa */
+  .cardapio { list-style: none; margin: 0; padding: 0; display: grid; gap: 0 64px; }
+  .cardapio li { padding: 22px 0; border-bottom: 1px solid var(--linha); display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; align-items: baseline; }
+  .cardapio h3 { font: 400 23px/1.25 var(--serif); }
+  .cardapio .dur { font-size: 15px; color: var(--texto-2); white-space: nowrap; }
+  .cardapio p { grid-column: 1 / -1; color: var(--texto-2); font-size: 16px; max-width: 46ch; }
+  .cardapio button { grid-column: 1 / -1; justify-self: start; margin-top: 6px; background: none; border: 0; padding: 4px 0; font: 600 15px var(--sans); color: var(--marca); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .cardapio button svg { width: 16px; height: 16px; transition: transform .3s var(--sai); }
+  .cardapio li:hover h3 { color: var(--marca); }
+  .cardapio h3 { transition: color .25s; }
+  .cardapio li:hover button svg, .cardapio button:hover svg { transform: translateX(4px); }
+  @media (min-width: 1000px) { .cardapio { grid-template-columns: 1fr 1fr; } }
+
+  /* Fotos */
+  .galeria { display: grid; grid-auto-flow: column; grid-auto-columns: 80%; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
+  .galeria figure { position: relative; aspect-ratio: 4 / 3; border-radius: 20px; overflow: hidden; background: var(--marca-suave); scroll-snap-align: start; }
+  .galeria img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--sai); }
+  .galeria figure:hover img { transform: scale(1.03); }
+  .galeria .credito { top: auto; bottom: 12px; right: 12px; }
+  @media (min-width: 1000px) {
+    .galeria { grid-auto-flow: row dense; grid-auto-columns: auto; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 220px; overflow: visible; }
+    .galeria figure { aspect-ratio: auto; }
+    .galeria figure:first-child { grid-column: span 2; grid-row: span 2; }
+    .galeria[data-n="1"] { grid-template-columns: 1fr; grid-auto-rows: 460px; }
+    .galeria[data-n="2"] { grid-template-columns: 1fr 1fr; grid-auto-rows: 380px; }
+    .galeria[data-n="3"] { grid-template-columns: 2fr 1fr; grid-auto-rows: 240px; }
+    .galeria[data-n="4"] { grid-template-columns: 2fr 1fr; grid-auto-rows: 160px; }
+    .galeria:is([data-n="1"], [data-n="2"]) figure:first-child { grid-column: auto; grid-row: auto; }
+    .galeria[data-n="3"] figure:first-child { grid-column: auto; grid-row: span 2; }
+    .galeria[data-n="4"] figure:first-child { grid-column: auto; grid-row: span 3; }
+  }
+
+  /* Avaliações */
+  .resumo-aval { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 36px; }
+  .resumo-aval .grande { font: 300 64px/1 var(--serif); }
+  .resumo-aval small { display: block; color: var(--texto-2); font-size: 15px; margin-top: 4px; }
+  .avals { columns: 1; column-gap: 20px; }
+  .aval { break-inside: avoid; margin-bottom: 20px; background: #fff; border-radius: 20px; padding: 26px; box-shadow: var(--sombra); }
+  .aval blockquote { font: 300 italic 20px/1.5 var(--serif); }
+  .aval footer { margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 14px; color: var(--texto-2); }
+  .aval footer b { color: var(--texto); font-weight: 600; }
+  .aval .mais { background: none; border: 0; padding: 0; margin-top: 8px; font: 600 15px var(--sans); color: var(--marca); cursor: pointer; text-decoration: underline; text-underline-offset: .2em; }
+  .fonte-aval { margin-top: 12px; font-size: 14px; color: var(--texto-2); display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  @media (min-width: 760px) { .avals { columns: 2; } }
+  @media (min-width: 1100px) { .avals.tres { columns: 3; } }
+
+  /* Agendamento */
+  .agenda { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .passo { border: 0; margin: 0 0 28px; padding: 0; min-width: 0; }
+  .passo legend, .passo > label { display: block; padding: 0; margin-bottom: 12px; font-size: 15px; font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips.rolagem { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+  .chip { font: 500 15px var(--sans); background: #fff; color: var(--texto); border: 1px solid var(--linha); border-radius: 999px; padding: 10px 16px; cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .12s; scroll-snap-align: start; flex: none; }
+  .chip:hover:not(:disabled) { border-color: var(--marca); }
+  .chip:active:not(:disabled) { transform: scale(.96); }
+  .chip[aria-pressed="true"] { background: var(--marca); border-color: var(--marca); color: var(--marca-texto); }
+  .chip:disabled { color: #9aa1a8; background: transparent; cursor: not-allowed; }
+  .chip.dia { border-radius: 16px; display: flex; flex-direction: column; align-items: center; min-width: 74px; line-height: 1.25; padding: 10px 12px; }
+  .chip.dia small { font-size: 13px; text-transform: capitalize; }
+  .vazio-chip { font-size: 15px; color: var(--texto-2); }
+  .campo-texto { width: 100%; max-width: 420px; font: 400 17px var(--sans); color: var(--texto); background: #fff; border: 1px solid var(--linha); border-radius: 14px; padding: 14px 16px; }
+  .campo-texto::placeholder { color: #666d74; }
+  .campo-texto:focus { outline: 2px solid var(--marca); outline-offset: 1px; border-color: transparent; }
+  .resumo { background: #fff; border-radius: 24px; padding: 28px; box-shadow: var(--sombra); align-self: start; }
+  .resumo h3 { font: 400 26px/1.2 var(--serif); }
+  .resumo dl { margin: 18px 0 24px; }
+  .resumo dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--linha); }
+  .resumo dt { color: var(--texto-2); font-size: 15px; }
+  .resumo dd { margin: 0; font-weight: 600; text-align: right; border-radius: 8px; transition: background 1s; }
+  .resumo dd.pendente { color: #666d74; font-weight: 400; }
+  .resumo dd.novo { animation: realce 1.1s var(--sai); }
+  @keyframes realce { from { background: var(--marca-media); box-shadow: 0 0 0 6px var(--marca-media); } to { background: transparent; box-shadow: 0 0 0 6px transparent; } }
+  .resumo .btn { width: 100%; }
+  .resumo .btn:disabled { background: #e9ebed; color: #666d74; box-shadow: none; cursor: not-allowed; }
+  .resumo-nota { margin-top: 12px; font-size: 14px; color: var(--texto-2); text-align: center; }
+  @media (min-width: 1000px) { .chips.rolagem { flex-wrap: wrap; overflow: visible; } .agenda { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 56px; } .resumo { position: sticky; top: calc(var(--topo) + 24px); } }
+
+  /* Localização */
+  .local-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .mapa { border-radius: 24px; overflow: hidden; min-height: 320px; background: var(--marca-suave); }
+  .mapa iframe { width: 100%; height: 100%; min-height: 320px; border: 0; display: block; }
+  .endereco { font: 400 24px/1.35 var(--serif); font-style: normal; max-width: 30ch; }
+  .botoes { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .semana { width: 100%; border-collapse: collapse; margin-top: 32px; font-size: 16px; }
+  .semana td { padding: 11px 14px; border-bottom: 1px solid var(--linha); }
+  .semana td:last-child { text-align: right; }
+  .semana tr.hoje td { background: #fff; color: var(--marca); font-weight: 600; border-bottom-color: transparent; }
+  .semana tr.hoje td:first-child { border-radius: 12px 0 0 12px; }
+  .semana tr.hoje td:last-child { border-radius: 0 12px 12px 0; }
+  @media (min-width: 1000px) {
+    .local-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 64px; align-items: stretch; }
+    .mapa { position: relative; min-height: 480px; }
+    .mapa iframe { position: absolute; inset: 0; height: 100%; }
+  }
+
+  /* Rodapé */
+  .rodape { background: var(--marca); color: var(--marca-texto); padding: 64px 0 120px; }
+  .rodape-grid { display: grid; gap: 28px; align-items: end; }
+  .rodape h2 { font: 300 clamp(32px, 4vw, 48px)/1.1 var(--serif); }
+  .rodape p { color: color-mix(in srgb, var(--marca-texto) 80%, var(--marca)); margin-top: 10px; }
+  .rodape .btn { background: #fff; color: var(--marca); }
+  .rodape small { display: block; margin-top: 40px; padding-top: 20px; border-top: 1px solid color-mix(in srgb, var(--marca-texto) 22%, var(--marca)); font-size: 13px; color: color-mix(in srgb, var(--marca-texto) 75%, var(--marca)); }
+  @media (min-width: 1000px) { .rodape { padding-bottom: 64px; } .rodape-grid { grid-template-columns: 1fr auto; } }
+
+  /* Barra do celular */
+  .barra { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40; display: flex; gap: 8px; padding: 8px; background: rgb(255 255 255 / .96); backdrop-filter: blur(10px); border-radius: 999px; box-shadow: 0 12px 32px -12px rgb(20 24 28 / .35), 0 0 0 1px var(--linha); }
+  .barra a { flex: 1; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; font-weight: 600; font-size: 16px; text-decoration: none; }
+  .barra .b-agendar { background: var(--marca); color: var(--marca-texto); }
+  .barra .b-contato { flex: 0 0 auto; padding: 0 18px; color: var(--marca); box-shadow: inset 0 0 0 1px var(--linha); }
+  .barra svg { width: 20px; height: 20px; }
+  @media (min-width: 1000px) { .barra { display: none; } }
+
+  /* Motion: estados iniciais só existem com .anima (JS ligado e sem "reduzir movimento") */
+  .anima:not(.pronto) :is(.nome, .sub, .nota-linha, .ctas, .hoje-linha, .vitrine, .barra) { opacity: 0; }
+  .anima .sobe { transition: opacity .8s var(--sai), transform .8s var(--sai); transition-delay: calc(var(--i, 0) * 70ms); }
+  .anima .sobe:not(.visto) { opacity: 0; transform: translateY(22px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="agencia" id="agencia" hidden></div>
+
+<header class="topo" id="topo">
+  <div class="wrap topo-in">
+    <a href="#" class="marca-nome" id="marca-nome"></a>
+    <nav aria-label="Seções" id="nav"></nav>
+    <a href="#agendar" class="btn btn-marca btn-topo">Agendar</a>
+  </div>
+</header>
+
+<main>
+  <section class="abertura">
+    <div class="wrap abertura-grid">
+      <div>
+        <h1 class="nome" id="nome"></h1>
+        <p class="sub" id="sub"></p>
+        <div class="nota-linha" id="nota-linha" hidden></div>
+        <div class="ctas" id="ctas"></div>
+        <p class="hoje-linha" id="hoje" hidden></p>
+      </div>
+      <div class="vitrine" id="vitrine"></div>
+    </div>
+  </section>
+
+  <section class="secao" id="tratamentos" aria-labelledby="h-trat">
+    <div class="wrap">
+      <div class="cabeca">
+        <h2 class="titulo" id="h-trat">Tratamentos</h2>
+        <p class="titulo-sub">Escolha um tratamento para agendar.</p>
+      </div>
+      <ul class="cardapio" id="cardapio"></ul>
+    </div>
+  </section>
+
+  <section class="secao" id="fotos" aria-labelledby="h-fotos" hidden>
+    <div class="wrap">
+      <div class="cabeca"><h2 class="titulo" id="h-fotos">Conheça o espaço</h2></div>
+      <div class="galeria" id="galeria"></div>
+    </div>
+  </section>
+
+  <section class="secao tinta" id="avaliacoes" aria-labelledby="h-aval" hidden>
+    <div class="wrap">
+      <div class="cabeca"><h2 class="titulo" id="h-aval">Avaliações no Google</h2></div>
+      <div class="resumo-aval" id="resumo-aval"></div>
+      <div class="avals" id="avals"></div>
+      <p class="fonte-aval" id="fonte-aval"></p>
+    </div>
+  </section>
+
+  <section class="secao" id="agendar" aria-labelledby="h-agendar">
+    <div class="wrap">
+      <div class="cabeca">
+        <h2 class="titulo" id="h-agendar">Agende seu horário</h2>
+        <p class="titulo-sub" id="agendar-sub"></p>
+      </div>
+      <div class="agenda">
+        <div>
+          <fieldset class="passo"><legend>Tratamento</legend><div class="chips" id="c-trat"></div></fieldset>
+          <fieldset class="passo"><legend>Dia</legend><div class="chips rolagem" id="c-dia"></div></fieldset>
+          <fieldset class="passo"><legend id="leg-hora">Horário preferido</legend><div class="chips" id="c-hora"><span class="vazio-chip">Escolha um dia primeiro.</span></div></fieldset>
+          <div class="passo"><label for="c-nome">Seu nome</label><input class="campo-texto" id="c-nome" type="text" autocomplete="given-name" placeholder="Como podemos te chamar?"></div>
+        </div>
+        <aside class="resumo" aria-live="polite">
+          <h3>Seu agendamento</h3>
+          <dl>
+            <div><dt>Tratamento</dt><dd id="e-trat" class="pendente">a escolher</dd></div>
+            <div><dt>Dia</dt><dd id="e-dia" class="pendente">a escolher</dd></div>
+            <div><dt id="e-hora-rot">Horário</dt><dd id="e-hora" class="pendente">a escolher</dd></div>
+            <div><dt>Nome</dt><dd id="e-nome" class="pendente">opcional</dd></div>
+          </dl>
+          <button class="btn btn-marca" id="enviar" disabled></button>
+          <p class="resumo-nota" id="e-nota"></p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao tinta" id="local" aria-labelledby="h-local">
+    <div class="wrap local-grid">
+      <div class="mapa" id="mapa"></div>
+      <div>
+        <h2 class="titulo" id="h-local">Como chegar</h2>
+        <div id="endereco"></div>
+        <table class="semana num" id="semana" aria-label="Horário de funcionamento"></table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="wrap">
+    <div class="rodape-grid">
+      <div><h2 id="r-nome"></h2><p id="r-end"></p></div>
+      <a href="#agendar" class="btn">Agendar horário</a>
+    </div>
+    <small id="r-fonte"></small>
+  </div>
+</footer>
+<nav class="barra" id="barra" aria-label="Agendar"></nav>
+
+<script type="application/json" id="dados">{
+  "nome": "Clínica Vértice Estética Avançada",
+  "nicho": "estetica",
+  "bairro": "Vila Mariana",
+  "cidade": "São Paulo",
+  "endereco": "R. Domingos de Morais, 1000, Vila Mariana, São Paulo - SP",
+  "maps": "",
+  "telefone": "(11) 90000-0000",
+  "whatsapp": "5511900000000",
+  "nota": 4.8,
+  "totalAvaliacoes": 187,
+  "avaliacoes": [
+    {
+      "autor": "Mariana S.",
+      "nota": 5,
+      "texto": "Fui fazer uma avaliação achando que ia sair com um pacote empurrado, e foi o contrário: a doutora explicou o que fazia sentido para a minha pele e o que não precisava. Voltei para a limpeza e já marquei o retorno.",
+      "quando": "há 2 semanas"
+    },
+    {
+      "autor": "Rafael T.",
+      "nota": 5,
+      "texto": "Agendei pelo WhatsApp tarde da noite e responderam cedo no dia seguinte. Atendimento pontual e ambiente muito tranquilo.",
+      "quando": "há 1 mês"
+    },
+    {
+      "autor": "Cláudia M.",
+      "nota": 5,
+      "texto": "Fiz drenagem no pós-operatório e fui muito bem cuidada. Equipe atenciosa do começo ao fim, sempre explicando cada etapa.",
+      "quando": "há 3 meses"
+    },
+    {
+      "autor": "Juliana P.",
+      "nota": 4,
+      "texto": "Gostei bastante do peeling, a recuperação foi como explicaram. Só achei o estacionamento da rua difícil.",
+      "quando": "há 5 meses"
+    }
+  ],
+  "fotos": [
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/YHI_Spa_treatment_room_at_Paradisus_by_Meli%C3%A1_Bali.jpg/960px-YHI_Spa_treatment_room_at_Paradisus_by_Meli%C3%A1_Bali.jpg",
+      "credito": "Paradisus Bali, CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Lounge_at_the_Spa_at_Silver_Legacy_-_2021-11-14_-_Sarah_Stierch_01.jpg/1280px-Lounge_at_the_Spa_at_Silver_Legacy_-_2021-11-14_-_Sarah_Stierch_01.jpg",
+      "credito": "Sarah Stierch, CC BY 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Infinity_mirror%2C_hand-washing_sink_and_wardrobes_in_the_spa_of_Amantaka_luxury_Resort_%26_Hotel_in_Luang_Prabang_Laos.jpg/1280px-Infinity_mirror%2C_hand-washing_sink_and_wardrobes_in_the_spa_of_Amantaka_luxury_Resort_%26_Hotel_in_Luang_Prabang_Laos.jpg",
+      "credito": "Basile Morin, CC BY-SA 4.0, Wikimedia Commons"
+    }
+  ],
+  "horarios": [
+    {
+      "dia": "Segunda-feira",
+      "horario": "09:00–19:00"
+    },
+    {
+      "dia": "Terça-feira",
+      "horario": "09:00–19:00"
+    },
+    {
+      "dia": "Quarta-feira",
+      "horario": "09:00–19:00"
+    },
+    {
+      "dia": "Quinta-feira",
+      "horario": "09:00–20:00"
+    },
+    {
+      "dia": "Sexta-feira",
+      "horario": "09:00–19:00"
+    },
+    {
+      "dia": "Sábado",
+      "horario": "09:00–13:00"
+    },
+    {
+      "dia": "Domingo",
+      "horario": "fechado"
+    }
+  ],
+  "fonte": "exemplo",
+  "agencia": {
+    "nome": "",
+    "whatsapp": "5512982117988",
+    "projeto_pages": "previas-sites"
+  }
+}</script>
+<script>
+const NICHOS = {
+  estetica: { rotulo: "Estética", cor: "#7d2a45", servicos: [
+    ["Avaliação facial", 40, "Consulta para analisar a pele e conversar sobre as opções de cuidado."],
+    ["Limpeza de pele", 60, "Higienização com extração, esfoliação e hidratação."],
+    ["Peeling químico", 45, "Aplicação controlada de ácidos na camada superficial da pele."],
+    ["Bioestimulador de colágeno", 50, "Procedimento injetável, indicado após avaliação individual."],
+    ["Microagulhamento", 60, "Procedimento com microagulhas, feito com anestésico tópico."],
+    ["Drenagem linfática", 60, "Massagem manual com movimentos leves e ritmados."],
+  ]},
+  odonto: { rotulo: "Odontologia", cor: "#0f5468", servicos: [
+    ["Consulta e avaliação", 40, "Exame clínico completo e plano de tratamento."],
+    ["Limpeza e profilaxia", 45, "Remoção de tártaro e placa bacteriana, com polimento."],
+    ["Clareamento dental", 60, "Clareamento no consultório ou com moldeira para casa."],
+    ["Restauração", 50, "Tratamento de cáries com resina da cor do dente."],
+    ["Ortodontia", 40, "Avaliação para aparelho fixo ou alinhadores."],
+    ["Implantes", 40, "Avaliação para repor dentes com implante."],
+  ]},
+  fisio: { rotulo: "Fisioterapia", cor: "#2d5a4a", servicos: [
+    ["Avaliação fisioterapêutica", 50, "Conversa, testes e um plano de tratamento."],
+    ["Fisioterapia ortopédica", 50, "Atendimento para lesões, dores e pós-operatório."],
+    ["RPG", 50, "Sessões do método de reeducação postural global."],
+    ["Pilates clínico", 50, "Exercícios de Pilates com acompanhamento do fisioterapeuta."],
+    ["Fisioterapia esportiva", 50, "Atendimento a atletas e praticantes de esporte."],
+    ["Liberação miofascial", 40, "Técnica manual aplicada sobre músculos e fáscias."],
+  ]},
+  nutri: { rotulo: "Nutrição", cor: "#556b24", servicos: [
+    ["Consulta inicial", 60, "Avaliação de hábitos, exames e objetivos."],
+    ["Retorno", 40, "Ajuste do plano alimentar e acompanhamento."],
+    ["Bioimpedância", 20, "Medição de gordura, massa magra e hidratação."],
+    ["Nutrição esportiva", 60, "Plano alimentar para quem treina."],
+    ["Reeducação alimentar", 60, "Acompanhamento para mudança de hábitos alimentares."],
+    ["Consulta online", 50, "Atendimento por vídeo, de onde você estiver."],
+  ]},
+  psico: { rotulo: "Psicologia", cor: "#3e3a78", servicos: [
+    ["Primeira sessão", 50, "Conversa inicial para entender o que você procura."],
+    ["Psicoterapia individual", 50, "Sessões semanais para adultos."],
+    ["Terapia de casal", 60, "Um espaço para o casal conversar, com mediação."],
+    ["Atendimento online", 50, "Sessões por vídeo, com o mesmo sigilo."],
+    ["Orientação de pais", 50, "Apoio a pais e responsáveis."],
+    ["Psicoterapia para adolescentes", 50, "Atendimento para jovens de 12 a 17 anos."],
+  ]},
+};
+
+const ICONES = {
+  seta: '<svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  wa: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>',
+  tel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+  mapa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  estrela: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8z" fill="currentColor"/></svg>',
+  estrelaVazia: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>',
+};
+
+// ---------- dados ----------
+let D;
+let escolher = () => {};
+try { D = JSON.parse(document.getElementById("dados").textContent); } catch { D = null; }
+if (!D) {
+  // Template aberto direto (sem passar pelo gerador): usa o exemplo do outro template
+  fetch("../clinica/exemplo.json").then(r => r.json()).then(iniciar);
+} else iniciar(D);
+
+function iniciar(dados) {
+  D = dados;
+  const html = document.documentElement;
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "animate" in Element.prototype) {
+    html.classList.add("anima");
+    setTimeout(abertura, 800); // se as fontes demorarem, a página não fica escondida
+  }
+  const nicho = NICHOS[D.nicho] || NICHOS.estetica;
+  const servicos = (D.servicos || nicho.servicos).map(s => Array.isArray(s) ? { nome: s[0], dur: s[1], desc: s[2] } : s);
+  const fotos = D.fotos || [];
+  const avals = D.avaliacoes || [];
+  const ehExemplo = D.fonte === "exemplo";
+  const local = [D.bairro, D.cidade].filter(Boolean).join(", ");
+  const contato = D.whatsapp ? { tipo: "wa", href: wa(D.whatsapp, `Olá! Vim pelo site da ${D.nome} e gostaria de mais informações.`), rotulo: "WhatsApp", ico: ICONES.wa }
+    : D.telefone ? { tipo: "tel", href: "tel:" + D.telefone.replace(/[^\d+]/g, ""), rotulo: "Ligar", ico: ICONES.tel } : null;
+
+  html.style.setProperty("--marca", nicho.cor);
+  document.title = `${D.nome} · ${nicho.rotulo}${D.bairro ? " em " + D.bairro : ""}`;
+  $("#marca-nome").textContent = D.nome;
+  window.addEventListener("scroll", () => $("#topo").classList.toggle("rolou", scrollY > 8), { passive: true });
+
+  // Faixa da agência (só aparece em demonstração)
+  const ag = D.agencia || {};
+  if (D.fonte) {
+    const faixa = $("#agencia");
+    faixa.append(el("span", {}, ehExemplo
+      ? "Clínica fictícia de exemplo. Com os dados do seu negócio no Google, o site fica assim, mas com o seu nome, suas fotos e suas avaliações."
+      : `Demonstração feita para ${D.nome} com informações públicas${D.fonte === "google" ? " do Google" : ""}. Os tratamentos listados são exemplos.`));
+    if (ag.whatsapp) {
+      const link = el("a", { href: wa(ag.whatsapp, `Oi! Vi a demonstração do site${ehExemplo ? "" : " da " + D.nome} e quero saber mais.`), target: "_blank", rel: "noopener" }, `Quero este site${ag.nome ? " · " + ag.nome : ""}`);
+      link.insertAdjacentHTML("beforeend", ICONES.seta);
+      faixa.append(link);
+    }
+    faixa.hidden = false;
+  }
+
+  // Abertura: nome palavra a palavra (para a animação), sub-linha abaixo
+  $("#nome").textContent = D.nome;
+  $("#nome").classList.toggle("longo", D.nome.length > 34); // nomes longos (comuns em clínicas) não viram 5 linhas gigantes
+  $("#sub").textContent = `${nicho.rotulo}${local ? " em " + local : ""}.`;
+  if (D.nota) {
+    const nl = $("#nota-linha");
+    nl.append(estrelas(D.nota), el("b", { class: "num" }, fmtNota(D.nota)), el("span", {}, `${D.totalAvaliacoes.toLocaleString("pt-BR")} ${D.totalAvaliacoes === 1 ? "avaliação" : "avaliações"} no Google`));
+    nl.hidden = false;
+  }
+  const ctas = $("#ctas");
+  ctas.append(botaoHtml("#agendar", "Agendar avaliação", ICONES.seta, "btn btn-marca", true));
+  if (contato) ctas.append(botaoHtml(contato.href, contato.rotulo, contato.ico, "btn btn-claro", false, contato.tipo === "wa"));
+  const hoje = new Date(), intHoje = intervalosDoDia(hoje);
+  if (intHoje) {
+    const aberto = estaAberto(intHoje, hoje);
+    const ate = aberto ? intHoje.find(([a, b]) => minutos(hoje) < b) : null;
+    const h = $("#hoje");
+    h.classList.toggle("aberto", aberto);
+    h.append(el("i"), aberto ? el("span", {}, el("b", {}, "Aberto agora"), ` · até ${hhmm(ate[1])}`)
+      : el("span", {}, el("b", {}, "Fechado agora"), intHoje.length ? ` · hoje ${cap(textoHorario(hoje))}` : " · não abre hoje"));
+    h.hidden = false;
+  }
+
+  // Vitrine: foto real com avaliação por cima; sem foto, a avaliação vira o destaque; sem nada, horário e endereço
+  const vit = $("#vitrine");
+  const melhor = [...avals].sort((a, b) => b.nota - a.nota || a.texto.length - b.texto.length)[0];
+  const curta = t => t.length > 150 ? t.slice(0, 140).replace(/\s+\S*$/, "") + "…" : t;
+  if (D.video) {
+    vit.append(el("figure", { class: "foto-capa video" }, videoHero()));
+    if (melhor) vit.append(el("figure", { class: "cartao-aval" }, el("p", {}, `“${curta(melhor.texto)}”`),
+      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "avaliação fictícia" : "no Google"))));
+  } else if (fotos.length) {
+    vit.append(el("figure", { class: "foto-capa" }, el("img", { src: fotos[0].url, alt: `Foto de ${D.nome}`, referrerpolicy: "no-referrer" })),
+      el("span", { class: "credito" }, credito(fotos[0])));
+    if (melhor) vit.append(el("figure", { class: "cartao-aval" }, el("p", {}, `“${curta(melhor.texto)}”`),
+      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, "no Google"))));
+  } else if (melhor) {
+    vit.append(el("figure", { class: "painel-cit" }, el("blockquote", {}, `“${curta(melhor.texto)}”`),
+      el("footer", {}, estrelas(melhor.nota), el("b", {}, melhor.autor), el("span", {}, ehExemplo ? "avaliação fictícia" : "no Google"))));
+  } else {
+    const dl = el("dl");
+    if (intHoje) dl.append(el("div", {}, el("dt", {}, "Hoje"), el("dd", {}, intHoje.length ? textoHorario(hoje) : "Fechado")));
+    if (D.endereco) dl.append(el("div", {}, el("dt", {}, "Endereço"), el("dd", {}, D.endereco)));
+    if (D.telefone) dl.append(el("div", {}, el("dt", {}, "Telefone"), el("dd", {}, D.telefone)));
+    vit.append(el("div", { class: "painel-cit" }, dl));
+  }
+
+  // Tratamentos
+  $("#cardapio").append(...servicos.map((s, i) => {
+    const b = el("button", { type: "button" }, "Agendar este");
+    b.insertAdjacentHTML("beforeend", ICONES.seta);
+    b.addEventListener("click", () => { escolher("trat", i); $("#agendar").scrollIntoView(); });
+    return el("li", {}, el("h3", {}, s.nome), el("span", { class: "dur num" }, `${s.dur} min`), el("p", {}, s.desc), b);
+  }));
+
+  // Fotos
+  // com vídeo no hero, todas as fotos reais vão para a galeria
+  const galeria = fotos.slice(D.video ? 0 : 1, D.video ? 5 : 6);
+  if (galeria.length) {
+    $("#galeria").append(...galeria.map((f, i) => el("figure", { class: "sobe", style: `--i:${Math.min(i, 5)}` },
+      el("img", { src: f.url, alt: `Foto de ${D.nome}`, loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }),
+      el("figcaption", { class: "credito" }, credito(f)))));
+    $("#galeria").dataset.n = galeria.length;
+    $("#fotos").hidden = false;
+  }
+
+  // Avaliações
+  if (avals.length) {
+    $("#avaliacoes").hidden = false;
+    if (D.nota) $("#resumo-aval").append(el("span", { class: "grande num" }, fmtNota(D.nota)),
+      el("div", {}, estrelas(D.nota), el("small", {}, `Média de ${D.totalAvaliacoes.toLocaleString("pt-BR")} avaliações no Google`)));
+    else $("#resumo-aval").hidden = true;
+    if (avals.length - 1 >= 3) $("#avals").classList.add("tres");
+    const grade = avals.filter(a => a !== melhor);
+    if (!grade.length) $("#avals").hidden = true;
+    $("#avals").append(...grade.map((a, i) => {
+      const longo = a.texto.length > 360;
+      const q = el("blockquote", {}, longo ? a.texto.slice(0, 340).replace(/\s+\S*$/, "") + "…" : a.texto);
+      const art = el("figure", { class: "aval sobe", style: `--i:${Math.min(i, 4)}` }, estrelas(a.nota), q);
+      if (longo) {
+        const mais = el("button", { class: "mais", type: "button" }, "Ler tudo");
+        mais.addEventListener("click", () => { q.textContent = a.texto; mais.remove(); });
+        art.append(mais);
+      }
+      art.append(el("footer", {}, el("b", {}, a.autor), a.quando ? el("span", {}, a.quando) : ""));
+      return art;
+    }));
+    const fonte = $("#fonte-aval");
+    fonte.append(el("span", {}, ehExemplo ? "Avaliações fictícias, só para ilustrar." : "Avaliações publicadas por pacientes no Google."));
+    if (D.maps && !ehExemplo) fonte.append(el("a", { href: D.maps, target: "_blank", rel: "noopener" }, "Ver todas no Google Maps"));
+  }
+
+  // Navegação
+  const secoes = [["tratamentos", "Tratamentos"], ["avaliacoes", "Avaliações"], ["local", "Como chegar"]];
+  $("#nav").append(...secoes.filter(([id]) => !$("#" + id).hidden).map(([id, t]) => el("a", { href: "#" + id }, t)));
+
+  montarAgenda(servicos, contato);
+
+  // Localização
+  if (D.endereco) {
+    $("#mapa").append(el("iframe", { title: "Mapa com a localização da clínica", loading: "lazy", referrerpolicy: "no-referrer-when-downgrade",
+      src: "https://www.google.com/maps?output=embed&q=" + encodeURIComponent(D.endereco) }));
+  } else $("#mapa").hidden = true;
+  const end = $("#endereco");
+  if (D.endereco) end.append(el("address", { class: "endereco" }, D.endereco));
+  const botoes = el("div", { class: "botoes" });
+  if (D.maps || D.endereco) botoes.append(botaoHtml(D.maps || "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(D.endereco), "Abrir no Google Maps", ICONES.mapa, "btn btn-claro", false, true));
+  if (D.telefone) botoes.append(botaoHtml("tel:" + D.telefone.replace(/[^\d+]/g, ""), D.telefone, ICONES.tel, "btn btn-claro"));
+  end.append(botoes);
+  const idxHoje = (hoje.getDay() + 6) % 7;
+  if (D.horarios?.length) {
+    $("#semana").append(...D.horarios.map((h, i) => el("tr", { class: i === idxHoje ? "hoje" : "" },
+      el("td", {}, h.dia + (i === idxHoje ? " (hoje)" : "")), el("td", {}, cap(h.horario)))));
+  } else $("#semana").hidden = true;
+
+  // Rodapé e barra do celular
+  $("#r-nome").textContent = D.nome;
+  $("#r-end").textContent = [D.endereco, D.telefone].filter(Boolean).join(" · ");
+  $("#r-fonte").textContent = ehExemplo ? `Clínica fictícia, criada para demonstração.${creditosLivres(fotos)}` : D.fonte === "google" ? "Nota, avaliações e fotos: Google." : "Nota e avaliações: Google.";
+  const barra = $("#barra");
+  barra.append(el("a", { class: "b-agendar", href: "#agendar" }, "Agendar horário"));
+  if (contato) barra.append(botaoHtml(contato.href, contato.rotulo, contato.ico, "b-contato", false, contato.tipo === "wa"));
+
+  if (html.classList.contains("anima")) revelar();
+  document.fonts.ready.then(abertura);
+}
+
+// ---------- agendamento ----------
+function montarAgenda(servicos, contato) {
+  const est = { trat: null, dia: null, hora: null };
+  const semHorarios = !D.horarios?.length;
+  const dias = [];
+  for (let i = 0; dias.length < 14; i++) {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + i);
+    const slots = horariosDisponiveis(d, semHorarios);
+    if (i === 0 && !slots.length) continue;
+    dias.push({ d, slots });
+  }
+  $("#leg-hora").textContent = semHorarios ? "Período preferido" : "Horário preferido";
+  $("#e-hora-rot").textContent = semHorarios ? "Período" : "Horário";
+  $("#agendar-sub").textContent = contato?.tipo === "wa"
+    ? "Escolha o tratamento, o dia e o horário. Seu pedido vai pronto para o WhatsApp da clínica, que confirma com você."
+    : "Escolha o tratamento, o dia e o horário, e informe à clínica pelo telefone.";
+
+  const chip = (txt, sel, attrs = {}) => el("button", { type: "button", class: "chip", "aria-pressed": String(sel), ...attrs }, ...[].concat(txt));
+  const dataCurta = d => d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  const dataLonga = d => d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
+  function render(campoMudou) {
+    $("#c-trat").replaceChildren(...servicos.map((s, i) => chip(s.nome, est.trat === i, { "data-i": i })));
+    $("#c-dia").replaceChildren(...dias.map(({ d, slots }, i) => chip(
+      [dataCurta(d), el("small", {}, slots.length ? d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "") : "fechado")],
+      est.dia === i, { "data-i": i, class: "chip dia", ...(slots.length ? {} : { disabled: "" }) })));
+    if (est.dia !== null) $("#c-hora").replaceChildren(...dias[est.dia].slots.map(h => chip(h, est.hora === h, { "data-h": h })));
+    const s = servicos[est.trat];
+    preencher("#e-trat", s ? `${s.nome} · ${s.dur} min` : null, "a escolher", campoMudou === "trat");
+    preencher("#e-dia", est.dia !== null ? dataLonga(dias[est.dia].d) : null, "a escolher", campoMudou === "dia");
+    preencher("#e-hora", est.hora, "a escolher", campoMudou === "hora");
+    preencher("#e-nome", $("#c-nome").value.trim() || null, "opcional", campoMudou === "nome");
+    $("#enviar").disabled = !(contato && s && est.dia !== null && est.hora);
+  }
+  function preencher(sel, val, vazio, realcar) {
+    const dd = $(sel);
+    dd.textContent = val || vazio;
+    dd.classList.toggle("pendente", !val);
+    if (realcar && val) { dd.classList.remove("novo"); void dd.offsetWidth; dd.classList.add("novo"); }
+  }
+  escolher = (campo, v) => {
+    est[campo] = v;
+    if (campo === "dia") est.hora = null;
+    render(campo);
+  };
+
+  $("#c-trat").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) escolher("trat", +b.dataset.i); });
+  $("#c-dia").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b && !b.disabled) escolher("dia", +b.dataset.i); });
+  $("#c-hora").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) escolher("hora", b.dataset.h); });
+  let t; $("#c-nome").addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => render("nome"), 350); });
+
+  const env = $("#enviar");
+  if (!contato) {
+    env.append("Contato indisponível");
+    $("#e-nota").textContent = "Esta clínica não tem telefone no Google.";
+  } else if (contato.tipo === "wa") {
+    env.insertAdjacentHTML("beforeend", ICONES.wa); env.append("Enviar pelo WhatsApp");
+    $("#e-nota").textContent = "A clínica responde pelo WhatsApp para confirmar.";
+  } else {
+    env.insertAdjacentHTML("beforeend", ICONES.tel); env.append(`Ligar: ${D.telefone}`);
+    $("#e-nota").textContent = "Esta clínica atende por telefone. Diga o tratamento, o dia e o horário que você escolheu.";
+  }
+  env.addEventListener("click", () => {
+    const s = servicos[est.trat], nome = $("#c-nome").value.trim();
+    if (contato.tipo === "tel") { location.href = contato.href; return; }
+    const txt = `Olá! Vim pelo site e gostaria de agendar:\n\nTratamento: ${s.nome}\nDia: ${dataLonga(dias[est.dia].d)}\n${semHorarios ? "Período" : "Horário"} preferido: ${est.hora}${nome ? `\nNome: ${nome}` : ""}\n\nPode confirmar?`;
+    window.open(wa(D.whatsapp, txt), "_blank", "noopener");
+  });
+  render();
+}
+
+// ---------- horários ----------
+function semAcento(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+function minutos(d) { return d.getHours() * 60 + d.getMinutes(); }
+function hhmm(m) { m %= 1440; return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`; }
+function linhaDoDia(d) {
+  if (!D.horarios?.length) return null;
+  const alvo = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"][d.getDay()];
+  return D.horarios.find(h => semAcento(h.dia).startsWith(alvo)) || null;
+}
+function textoHorario(d) { return linhaDoDia(d)?.horario || ""; }
+// [[inicioMin, fimMin], ...]; [] = fechado; null = sem dado
+function intervalosDoDia(d) {
+  const l = linhaDoDia(d);
+  if (!l) return null;
+  if (/24 horas/i.test(l.horario)) return [[0, 1440]];
+  const ints = [];
+  for (const m of l.horario.matchAll(/(\d{1,2}):(\d{2})\D+?(\d{1,2}):(\d{2})/g)) {
+    const a = +m[1] * 60 + +m[2]; let b = +m[3] * 60 + +m[4];
+    if (b <= a) b += 1440;
+    ints.push([a, b]);
+  }
+  return ints;
+}
+function estaAberto(ints, agora) {
+  const m = minutos(agora);
+  return ints.some(([a, b]) => m >= a && m < b);
+}
+function horariosDisponiveis(d, semHorarios) {
+  const ehHoje = d.toDateString() === new Date().toDateString();
+  const minAgora = minutos(new Date());
+  if (semHorarios) {
+    if (d.getDay() === 0) return [];
+    return ["Manhã", "Tarde", "Noite"].filter((_, i) => !ehHoje || minAgora < [11, 16, 20][i] * 60);
+  }
+  const ints = intervalosDoDia(d) || [];
+  const slots = [];
+  for (const [a, b] of ints) {
+    for (let m = Math.ceil(a / 60) * 60; m <= Math.min(b, 1440) - 60; m += 60) {
+      if (ehHoje && m < minAgora + 60) continue;
+      slots.push(`${String(m / 60).padStart(2, "0")}:00`);
+    }
+  }
+  return slots;
+}
+
+// ---------- motion ----------
+// A página nasce visível; só com JS e sem "reduzir movimento" ela ganha .anima.
+// .pronto libera os estados escondidos; as animações seguram o quadro inicial com fill "backwards".
+const SAI = "cubic-bezier(.16, 1, .3, 1)";
+function abertura() {
+  const html = document.documentElement;
+  if (!html.classList.contains("anima") || html.classList.contains("pronto")) return;
+  html.classList.add("pronto");
+  const anim = (alvo, quadros, opts) => alvo?.animate(quadros, { easing: SAI, fill: "backwards", ...opts });
+  const sobe = [{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }];
+
+  // 1. a foto abre como uma cortina: a moldura arredondada se expande e a imagem assenta
+  const capa = $(".foto-capa, .painel-cit");
+  anim(capa, [{ clipPath: "inset(7% 9% 7% 9% round 48px)", opacity: 0 }, { clipPath: "inset(0% 0% 0% 0% round 28px)", opacity: 1 }], { duration: 1200 });
+  anim($(".foto-capa img"), [{ transform: "scale(1.12)" }, { transform: "scale(1)" }], { duration: 1800 });
+  anim($(".credito"), [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 900 });
+  anim($(".vitrine"), [{ opacity: 1 }, { opacity: 1 }], { duration: 1 });
+
+  // 2. o texto acompanha em silêncio: nome inteiro, depois sub-linha, nota, botões e horário
+  ["#nome", "#sub", "#nota-linha", "#ctas", "#hoje"].forEach((s, i) => anim($(s), sobe, { duration: 900, delay: 120 + i * 90 }));
+
+  // 3. a avaliação real desliza sobre a foto
+  anim($(".cartao-aval"), [{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "none" }], { duration: 900, delay: 700 });
+  anim($("#barra"), [{ transform: "translateY(140%)" }, { transform: "none" }], { duration: 700, delay: 800 });
+}
+function revelar() {
+  const itens = document.querySelectorAll(".sobe");
+  if (!("IntersectionObserver" in window)) return itens.forEach(e => e.classList.add("visto"));
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("visto"); io.unobserve(e.target); }
+  }), { rootMargin: "0px 0px -8% 0px" });
+  itens.forEach(e => io.observe(e));
+}
+
+// ---------- utilidades ----------
+function $(s) { return document.querySelector(s); }
+function wa(num, txt) { return `https://wa.me/${num}?text=${encodeURIComponent(txt)}`; }
+// fotos livres (CC BY / BY-SA) exigem autoria e licença: listadas uma vez no rodapé
+function creditosLivres(fotos) { const c = fotos.map(f => f.credito).filter(Boolean); return c.length ? ` Fotos ilustrativas: ${c.join("; ")}.` : ""; }
+function cap(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+function fmtNota(n) { return n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
+function el(tag, attrs = {}, ...filhos) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) if (v !== undefined && v !== null) e.setAttribute(k, v);
+  e.append(...filhos.flat().filter(f => f !== "" && f != null));
+  return e;
+}
+function estrelas(n) {
+  // fracionária de propósito: arredondar 4,6 para 5 estrelas exageraria a nota real da clínica
+  const s = el("span", { class: "estrelas", role: "img", "aria-label": `${String(n).replace(".", ",")} de 5 estrelas` });
+  const linha = ico => Array(5).fill(ico).join("");
+  s.innerHTML = `<span class="estrelas-base">${linha(ICONES.estrelaVazia)}</span><span class="estrelas-cheias" style="clip-path: inset(0 ${100 - n / 5 * 100}% 0 0)">${linha(ICONES.estrela)}</span>`;
+  return s;
+}
+function botaoHtml(href, txt, ico, cls, icoDepois = false, novaAba = false) {
+  const a = el("a", { class: cls, href, ...(novaAba ? { target: "_blank", rel: "noopener" } : {}) }, txt);
+  a.insertAdjacentHTML(icoDepois ? "beforeend" : "afterbegin", ico);
+  return a;
+}
+// no exemplo, a foto diz só "ilustrativa" (autor e licença ficam no rodapé); nos demos reais, a autoria do Google
+function videoHero() {
+  const v = el("video", { src: D.video.src, poster: D.video.poster, playsinline: "", preload: "auto", "aria-hidden": "true" });
+  v.muted = true; // sem som; com "reduzir movimento" fica parado no pôster (o quadro final)
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) v.autoplay = true;
+  // a compressão do vídeo desloca a cor do fundo em alguns pontos: a moldura copia a cor real do quadro, sem costura
+  v.addEventListener("loadeddata", () => {
+    try {
+      const c = document.createElement("canvas"); c.width = c.height = 1;
+      const g = c.getContext("2d"); g.drawImage(v, 4, 4, 1, 1, 0, 0, 1, 1);
+      const [r, gg, bb] = g.getImageData(0, 0, 1, 1).data;
+      v.parentElement.style.background = `rgb(${r} ${gg} ${bb})`;
+    } catch {}
+  }, { once: true });
+  return v;
+}
+function credito(f) { return D.fonte === "exemplo" ? "Foto ilustrativa" : `Foto${f.credito ? ": " + f.credito : ""} · ${f.origem || "Google"}`; }
+</script>
+</body>
+</html>

@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><!-- demo de prospecção: fora do Google até a clínica fechar -->
+<title>Clínica</title>
+<meta name="description" content="Agende pelo site ou pelo WhatsApp. Horários, endereço e avaliações.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #f5f5f2;
+    --tinta: #111111;
+    --tinta-2: #45453f;
+    --campo: #b5174f;
+    --campo-tinta: #ffffff;
+    --campo-tinta-2: color-mix(in srgb, var(--campo-tinta) 80%, var(--campo));
+    --regra: 2px solid var(--tinta);
+    --fio: 1px solid color-mix(in srgb, var(--tinta) 28%, var(--papel));
+    --mg: 16px;
+    --topo: 60px;
+    --font: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --sai: cubic-bezier(.16, 1, .3, 1);
+    --varre: color-mix(in srgb, var(--campo) 12%, var(--papel));
+    color-scheme: light;
+  }
+  @media (min-width: 700px) { :root { --mg: 32px; --topo: 68px; } }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topo) + 8px); scrollbar-color: var(--tinta) var(--papel); }
+  body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 17px/1.55 var(--font); font-variation-settings: "wdth" 100; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; caret-color: var(--campo); }
+  ::selection { background: var(--campo); color: var(--campo-tinta); }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-underline-offset: .18em; text-decoration-thickness: 1.5px; }
+  :focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+  h1, h2, h3, p { margin: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+  .rotulo { font-size: 13px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; }
+  .ico { width: 1.1em; height: 1.1em; flex: none; }
+  [hidden] { display: none !important; }
+
+  /* Faixa da agência */
+  .agencia { background: var(--tinta); color: var(--papel); font-size: 14px; line-height: 1.4; padding: 10px var(--mg); display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between; align-items: center; }
+  .agencia a { color: var(--papel); font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+  .agencia a svg { width: 16px; height: 16px; }
+
+  /* Topo */
+  .topo { position: sticky; top: 0; z-index: 30; background: var(--papel); border-bottom: var(--regra); height: var(--topo); display: flex; align-items: stretch; }
+  .marca { display: flex; align-items: center; gap: 10px; padding: 0 var(--mg); font-weight: 750; font-size: 16px; text-decoration: none; min-width: 0; flex: 1; }
+  .marca i { width: 18px; height: 18px; background: var(--campo); outline: 2px solid var(--tinta); flex: none; }
+  .marca span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topo nav { display: none; }
+  .topo nav a { display: flex; align-items: center; padding: 0 18px; font-size: 15px; font-weight: 600; text-decoration: none; border-left: var(--regra); }
+  .topo nav a:hover { background: color-mix(in srgb, var(--campo) 14%, var(--papel)); }
+  .btn-topo { display: flex; align-items: center; gap: 8px; padding: 0 var(--mg); background: var(--tinta); color: var(--papel); font-weight: 750; font-size: 15px; text-decoration: none; }
+  .btn-topo:hover { background: var(--campo); color: var(--campo-tinta); }
+  @media (min-width: 1000px) { .topo nav { display: flex; } }
+
+  /* Abertura */
+  .abertura { display: grid; grid-template-columns: 1fr; border-bottom: var(--regra); }
+  .campo { background: var(--campo); color: var(--campo-tinta); padding: 32px var(--mg) 20px; display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; }
+  .local { font-size: 17px; font-weight: 600; color: var(--campo-tinta-2); display: flex; gap: 6px 18px; flex-wrap: wrap; }
+  .local b { color: var(--campo-tinta); font-weight: 750; }
+  .nome { font-weight: 850; line-height: .9; letter-spacing: -.02em; overflow-wrap: anywhere; font-size: clamp(44px, 11vw, 150px); }
+  .nome span { display: block; white-space: nowrap; }
+  .nome.ajustado span { white-space: nowrap; }
+  .capa { margin: 0; position: relative; border-top: var(--regra); aspect-ratio: 2 / 1; overflow: hidden; background: var(--tinta); }
+  .capa img { width: 100%; height: 100%; object-fit: cover; }
+  /* vídeo do hero (odonto): fundo do vídeo = cor do campo, então o módulo vira continuação do campo */
+  .capa.video { background: var(--campo); aspect-ratio: 4 / 3; }
+  .capa video { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .credito { position: absolute; left: 0; bottom: 0; background: var(--papel); color: var(--tinta-2); font-size: 12px; padding: 4px 8px; border-top: var(--regra); border-right: var(--regra); }
+  @media (min-width: 1000px) {
+    .abertura.com-foto { grid-template-columns: 2fr 1fr; }
+    .campo { padding: 48px var(--mg) 30px; min-height: clamp(380px, 58svh, 620px); }
+    .capa, .capa.video { aspect-ratio: auto; border-top: 0; border-left: var(--regra); }
+  }
+
+  /* Faixa de dados */
+  .faixa { display: grid; grid-template-columns: 1fr 1fr; border-bottom: var(--regra); }
+  .celula { padding: 18px var(--mg) 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .celula + .celula { border-left: var(--regra); }
+  .celula .rotulo { color: var(--tinta-2); }
+  .nota-num { font-size: clamp(64px, 12vw, 128px); font-weight: 800; line-height: .82; letter-spacing: -.035em; font-variation-settings: "wdth" 88; }
+  .nota-linha { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+  .nota-meta { font-size: 15px; font-weight: 600; line-height: 1.3; padding-bottom: 4px; }
+  .estrelas { display: inline-flex; gap: 2px; color: var(--tinta); }
+  .estrelas svg { width: 15px; height: 15px; flex: none; }
+  .estrelas { position: relative; }
+  .estrelas-base, .estrelas-cheias { display: inline-flex; gap: 2px; }
+  .estrelas-cheias { position: absolute; inset: 0; }
+  .hoje-val { font-size: clamp(26px, 4vw, 40px); font-weight: 750; line-height: 1; letter-spacing: -.01em; font-variation-settings: "wdth" 92; }
+  .estado { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 650; }
+  .estado i { width: 10px; height: 10px; background: var(--tinta-2); }
+  .estado.aberto i { background: var(--campo); outline: 2px solid var(--tinta); }
+  .acao { grid-column: 1 / -1; border-top: var(--regra); background: var(--tinta); color: var(--papel); text-decoration: none; padding: 18px var(--mg) 20px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; transition: background .2s, color .2s; }
+  .acao:hover { background: var(--campo); color: var(--campo-tinta); }
+  .acao strong { display: block; font-size: clamp(28px, 4.4vw, 52px); font-weight: 800; line-height: .95; letter-spacing: -.02em; font-variation-settings: "wdth" 112; }
+  .acao small { font-size: 15px; font-weight: 500; opacity: .85; }
+  .acao svg { width: clamp(32px, 4vw, 52px); height: clamp(32px, 4vw, 52px); flex: none; transition: transform .3s cubic-bezier(.16,1,.3,1); }
+  .acao:hover svg { transform: translateX(6px); }
+  .faixa.so-uma { grid-template-columns: 1fr; }
+  @media (min-width: 1000px) {
+    .faixa { grid-template-columns: 1fr 1fr 1fr; }
+    .faixa.so-uma { grid-template-columns: 2fr 1fr; }
+    .acao { grid-column: auto; border-top: 0; border-left: var(--regra); }
+  }
+
+  /* Painéis */
+  .painel { display: grid; grid-template-columns: 1fr; border-bottom: var(--regra); }
+  .painel > header { padding: 28px var(--mg) 20px; display: flex; flex-direction: column; gap: 10px; }
+  .painel h2 { font-size: clamp(32px, 4.2vw, 52px); font-weight: 800; line-height: .95; letter-spacing: -.025em; font-variation-settings: "wdth" 84; }
+  .painel > header p { color: var(--tinta-2); font-size: 15px; max-width: 32ch; }
+  .painel > .corpo { min-width: 0; }
+  @media (min-width: 1000px) {
+    .painel { grid-template-columns: 1fr 3fr; }
+    .painel > header { padding: 32px var(--mg); position: sticky; top: var(--topo); align-self: start; }
+    .painel > .corpo { border-left: var(--regra); }
+  }
+
+  /* Tratamentos */
+  .trat { list-style: none; margin: 0; padding: 0; border-top: var(--regra); }
+  .trat li { display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; padding: 18px var(--mg); border-bottom: var(--fio); align-items: center; }
+  .trat li:last-child { border-bottom: 0; }
+  .trat h3 { font-size: 21px; font-weight: 750; line-height: 1.15; letter-spacing: -.01em; }
+  .trat p { color: var(--tinta-2); font-size: 16px; grid-column: 1; }
+  .trat .dur { font-size: 15px; font-weight: 650; color: var(--tinta-2); white-space: nowrap; grid-column: 2; grid-row: 1; justify-self: end; }
+  .trat button { grid-column: 2; grid-row: 2; justify-self: end; }
+  @media (min-width: 1000px) {
+    .trat { border-top: 0; }
+    .trat li { grid-template-columns: minmax(200px, 1.1fr) 1.6fr 80px auto; padding: 20px var(--mg); }
+    .trat p, .trat .dur, .trat button { grid-column: auto; grid-row: auto; }
+    .trat .dur { justify-self: start; }
+  }
+  .btn-linha { font: 700 15px var(--font); background: var(--papel); color: var(--tinta); border: var(--regra); padding: 9px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: background .15s, color .15s; }
+  .btn-linha:hover { background: var(--campo); color: var(--campo-tinta); }
+  .btn-linha svg { width: 16px; height: 16px; }
+
+  /* Fotos */
+  .fotos { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 2px; background: var(--tinta); overflow-x: auto; scroll-snap-type: x mandatory; border-top: var(--regra); scrollbar-width: thin; }
+  .fotos figure { margin: 0; position: relative; aspect-ratio: 4 / 3; background: var(--papel); scroll-snap-align: start; overflow: hidden; }
+  .fotos img { width: 100%; height: 100%; object-fit: cover; }
+  .fotos .credito { border-top: 0; border-right: 0; background: color-mix(in srgb, var(--papel) 92%, transparent); }
+  @media (min-width: 1000px) {
+    .fotos { grid-auto-flow: row dense; grid-auto-columns: auto; grid-template-columns: repeat(3, 1fr); grid-auto-rows: clamp(200px, 19vw, 300px); overflow: visible; border-top: 0; }
+    .fotos figure { aspect-ratio: auto; }
+    .fotos figure:first-child { grid-column: span 2; grid-row: span 2; }
+  }
+
+  /* Avaliações */
+  .avals { display: grid; grid-template-columns: 1fr; border-top: var(--regra); }
+  .aval { padding: 24px var(--mg) 26px; display: flex; flex-direction: column; gap: 14px; border-bottom: var(--fio); }
+  .aval:last-child { border-bottom: 0; }
+  .aval blockquote { margin: 0; font-size: 20px; line-height: 1.4; font-weight: 500; font-variation-settings: "wdth" 96; max-width: 62ch; }
+  .aval:first-child blockquote { font-size: clamp(24px, 3vw, 34px); line-height: 1.22; font-weight: 600; letter-spacing: -.01em; }
+  .aval footer { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 15px; color: var(--tinta-2); }
+  .aval footer b { color: var(--tinta); font-weight: 700; }
+  .aval .mais { background: none; border: 0; padding: 0; font: 700 15px var(--font); color: var(--tinta); text-decoration: underline; text-underline-offset: .18em; cursor: pointer; justify-self: start; align-self: flex-start; }
+  .fonte-aval { padding: 14px var(--mg); border-top: var(--regra); font-size: 14px; color: var(--tinta-2); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  @media (min-width: 1000px) {
+    .avals { border-top: 0; grid-template-columns: 1fr 1fr; }
+    .aval { border-bottom: var(--fio); }
+    .aval:first-child { grid-column: 1 / -1; padding: 32px var(--mg) 32px; }
+    .aval:nth-child(even) { border-right: var(--fio); }
+  }
+
+  /* Agendamento */
+  .agenda { display: grid; grid-template-columns: minmax(0, 1fr); border-top: var(--regra); }
+  .agenda > *, .onde > * { min-width: 0; }
+  .escolhas { padding: 24px var(--mg) 8px; display: flex; flex-direction: column; gap: 26px; }
+  .passo legend { padding: 0; margin-bottom: 10px; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips.rolagem { flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; scrollbar-width: thin; }
+  .chip { font: 650 15px var(--font); background: var(--papel); color: var(--tinta); border: var(--regra); padding: 9px 13px; cursor: pointer; transition: background .12s, color .12s; scroll-snap-align: start; }
+  .chip:hover:not(:disabled) { background: color-mix(in srgb, var(--campo) 14%, var(--papel)); }
+  .chip[aria-pressed="true"] { background: var(--campo); color: var(--campo-tinta); }
+  .chip:disabled { color: color-mix(in srgb, var(--tinta) 45%, var(--papel)); border-color: color-mix(in srgb, var(--tinta) 30%, var(--papel)); cursor: not-allowed; }
+  .chip.dia { display: flex; flex-direction: column; align-items: flex-start; min-width: 76px; line-height: 1.2; flex: none; }
+  .chip.dia small { font-weight: 500; font-size: 13px; }
+  .vazio-chip { font-size: 15px; color: var(--tinta-2); }
+  .campo-texto { width: 100%; max-width: 420px; font: 500 17px var(--font); background: var(--papel); color: var(--tinta); border: var(--regra); padding: 12px 14px; border-radius: 0; }
+  .campo-texto::placeholder { color: #6b6b64; }
+  .campo-texto:focus { outline: 3px solid var(--campo); outline-offset: 0; }
+
+  .etiqueta-wrap { padding: 24px var(--mg) 28px; background: var(--campo); border-top: var(--regra); }
+  .etiqueta { border: var(--regra); background: #fff; }
+  .etiqueta-topo { background: var(--tinta); color: var(--papel); padding: 14px 16px; border-bottom: var(--regra); display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .etiqueta-topo b { font-size: 20px; font-weight: 800; line-height: 1.05; font-variation-settings: "wdth" 90; }
+  .etiqueta-topo span { font-size: 13px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; color: color-mix(in srgb, var(--papel) 78%, var(--tinta)); }
+  .etiqueta dl { margin: 0; }
+  .etiqueta dl > div { display: grid; grid-template-columns: 124px 1fr; border-bottom: var(--fio); min-height: 50px; }
+  .etiqueta dt { padding: 14px 12px 14px 16px; border-right: var(--fio); color: var(--tinta-2); align-self: stretch; display: flex; align-items: center; }
+  .etiqueta dd { margin: 0; padding: 12px 16px; font-size: 18px; font-weight: 700; display: flex; align-items: center; }
+  .etiqueta dd.pendente { color: #6b6b64; font-weight: 500; font-size: 16px; }
+  .etiqueta dd.impresso { animation: imprime .5s cubic-bezier(.16,1,.3,1); }
+  @keyframes imprime {
+    from { clip-path: inset(0 100% 0 0); background: color-mix(in srgb, var(--campo) 18%, #fff); }
+    60% { background: color-mix(in srgb, var(--campo) 10%, #fff); }
+    to { clip-path: inset(0 0 0 0); background: transparent; }
+  }
+  .enviar { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; font: 800 20px var(--font); font-variation-settings: "wdth" 108; background: var(--tinta); color: var(--papel); border: 0; padding: 18px 16px; cursor: pointer; text-decoration: none; transition: background .2s, color .2s; }
+  .enviar:hover:not(:disabled) { background: var(--campo); color: var(--campo-tinta); outline: 2px solid var(--campo-tinta); outline-offset: -6px; }
+  .enviar:disabled { background: color-mix(in srgb, var(--tinta) 22%, var(--papel)); color: var(--tinta-2); cursor: not-allowed; }
+  .enviar svg { width: 26px; height: 26px; }
+  .etiqueta-nota { font-size: 14px; color: var(--campo-tinta); margin-top: 12px; max-width: 46ch; }
+  .rotulo-campo { display: block; margin-bottom: 10px; }
+  @media (min-width: 1000px) {
+    .agenda { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); border-top: 0; }
+    .escolhas { padding: 32px var(--mg); }
+    .etiqueta-wrap { border-left: var(--regra); border-top: 0; padding: 32px var(--mg); }
+    .chips.rolagem { flex-wrap: wrap; overflow: visible; }
+    .etiqueta-fixa { position: sticky; top: calc(var(--topo) + 24px); }
+  }
+
+  /* Horários e endereço */
+  .onde { display: grid; grid-template-columns: 1fr; border-top: var(--regra); }
+  .semana { width: 100%; border-collapse: collapse; font-size: 17px; }
+  .semana td { padding: 12px var(--mg); border-bottom: var(--fio); }
+  .semana td:last-child { text-align: right; font-weight: 650; }
+  .semana tr.hoje td { background: var(--campo); color: var(--campo-tinta); font-weight: 750; border-bottom-color: var(--tinta); }
+  .semana tr:last-child td { border-bottom: 0; }
+  .endereco { padding: 24px var(--mg); border-top: var(--regra); display: flex; flex-direction: column; gap: 16px; }
+  .endereco address { font-style: normal; font-size: 20px; font-weight: 600; line-height: 1.35; max-width: 34ch; }
+  .botoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mapa { border-top: var(--regra); min-height: 300px; background: color-mix(in srgb, var(--tinta) 8%, var(--papel)); }
+  .mapa iframe { width: 100%; height: 100%; min-height: 300px; border: 0; display: block; }
+  @media (min-width: 1000px) {
+    .onde { grid-template-columns: 1fr 1fr; border-top: 0; }
+    .onde-dados { border-right: var(--regra); }
+    .mapa { border-top: 0; min-height: 100%; }
+  }
+
+  /* Rodapé e barra do celular */
+  .rodape { padding: 28px var(--mg) 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; font-size: 14px; color: var(--tinta-2); }
+  .rodape b { color: var(--tinta); }
+  .barra { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: 1fr auto; border-top: var(--regra); background: var(--papel); padding-bottom: env(safe-area-inset-bottom); }
+  .barra a { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 58px; padding: 0 18px; font-weight: 750; font-size: 17px; text-decoration: none; }
+  .barra .b-agendar { background: var(--tinta); color: var(--papel); }
+  .barra .b-contato { background: var(--campo); color: var(--campo-tinta); border-left: var(--regra); }
+  .barra svg { width: 22px; height: 22px; }
+  body { padding-bottom: 60px; }
+  @media (min-width: 1000px) { .barra { display: none; } body { padding-bottom: 0; } }
+
+  /* Motion: estados iniciais só existem com .anima (JS ligado e sem "reduzir movimento") */
+  .anima:not(.pronto) :is(.campo, .capa) { clip-path: inset(0 100% 0 0); }
+  .anima:not(.pronto) :is(.nome, .local, .faixa, .barra) { opacity: 0; }
+  .anima .painel h2 { transition: clip-path .75s var(--sai), transform .75s var(--sai); }
+  .anima .painel:not(.visto) h2 { clip-path: inset(0 0 100% 0); transform: translateY(.35em); }
+  .anima .painel > header p { transition: opacity .6s .2s; }
+  .anima .painel:not(.visto) > header p { opacity: 0; }
+  .anima .trat li { transition: opacity .5s calc(var(--i, 0) * 55ms + .12s), transform .55s var(--sai) calc(var(--i, 0) * 55ms + .12s), background-size .35s var(--sai); }
+  .anima .painel:not(.visto) .trat li { opacity: 0; transform: translateY(14px); }
+  .anima .fotos figure { transition: clip-path .85s var(--sai) calc(var(--i, 0) * 70ms + .1s); }
+  .anima .painel:not(.visto) .fotos figure { clip-path: inset(0 100% 0 0); }
+  .anima :is(.avals, .fonte-aval, .agenda, .onde) { transition: opacity .7s .15s; }
+  .anima .painel:not(.visto) :is(.avals, .fonte-aval, .agenda, .onde) { opacity: 0; }
+  /* feedback: a cor do nicho varre a linha do tratamento; botões afundam ao clicar */
+  .trat li { background: linear-gradient(var(--varre), var(--varre)) no-repeat 0 0 / 0% 100%; transition: background-size .35s var(--sai); }
+  .trat li:hover { background-size: 100% 100%; }
+  .chip, .btn-linha, .enviar { transition: background .15s, color .15s, transform .1s; }
+  :is(.chip, .btn-linha, .enviar):active:not(:disabled) { transform: scale(.97); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="agencia" id="agencia" hidden></div>
+
+<header class="topo">
+  <a href="#" class="marca"><i aria-hidden="true"></i><span id="marca-nome"></span></a>
+  <nav aria-label="Seções" id="nav"></nav>
+  <a href="#agendar" class="btn-topo">Agendar</a>
+</header>
+
+<main>
+  <section class="abertura" id="abertura">
+    <div class="campo">
+      <h1 class="nome" id="nome"></h1>
+      <p class="local" id="local"></p>
+    </div>
+  </section>
+
+  <div class="faixa" id="faixa"></div>
+
+  <section class="painel" id="tratamentos" aria-labelledby="h-trat">
+    <header>
+      <h2 id="h-trat">Tratamentos</h2>
+      <p>Escolha um tratamento para agendar.</p>
+    </header>
+    <div class="corpo"><ul class="trat" id="lista-trat"></ul></div>
+  </section>
+
+  <section class="painel" id="fotos" aria-labelledby="h-fotos" hidden>
+    <header><h2 id="h-fotos">O espaço</h2></header>
+    <div class="corpo"><div class="fotos" id="galeria"></div></div>
+  </section>
+
+  <section class="painel" id="avaliacoes" aria-labelledby="h-aval" hidden>
+    <header>
+      <h2 id="h-aval">O que dizem no Google</h2>
+      <p id="aval-resumo"></p>
+    </header>
+    <div class="corpo">
+      <div class="avals" id="avals"></div>
+      <p class="fonte-aval" id="fonte-aval"></p>
+    </div>
+  </section>
+
+  <section class="painel" id="agendar" aria-labelledby="h-agendar">
+    <header>
+      <h2 id="h-agendar">Agende seu horário</h2>
+      <p id="agendar-sub"></p>
+    </header>
+    <div class="corpo agenda">
+      <div class="escolhas">
+        <fieldset class="passo">
+          <legend class="rotulo">Tratamento</legend>
+          <div class="chips" id="c-trat"></div>
+        </fieldset>
+        <fieldset class="passo">
+          <legend class="rotulo">Dia</legend>
+          <div class="chips rolagem" id="c-dia"></div>
+        </fieldset>
+        <fieldset class="passo">
+          <legend class="rotulo" id="leg-hora">Horário preferido</legend>
+          <div class="chips" id="c-hora"><span class="vazio-chip">Escolha um dia primeiro.</span></div>
+        </fieldset>
+        <div class="passo">
+          <label class="rotulo rotulo-campo" for="c-nome">Seu nome</label>
+          <input class="campo-texto" id="c-nome" type="text" autocomplete="given-name" placeholder="Como podemos te chamar?">
+        </div>
+      </div>
+      <div class="etiqueta-wrap">
+        <div class="etiqueta-fixa">
+          <div class="etiqueta" aria-live="polite">
+            <div class="etiqueta-topo"><b id="e-clinica"></b><span>Agendamento</span></div>
+            <dl>
+              <div><dt class="rotulo">Tratamento</dt><dd id="e-trat" class="pendente">a escolher</dd></div>
+              <div><dt class="rotulo">Dia</dt><dd id="e-dia" class="pendente">a escolher</dd></div>
+              <div><dt class="rotulo">Horário</dt><dd id="e-hora" class="pendente">a escolher</dd></div>
+              <div><dt class="rotulo">Nome</dt><dd id="e-nome" class="pendente">opcional</dd></div>
+            </dl>
+            <button class="enviar" id="enviar" disabled></button>
+          </div>
+          <p class="etiqueta-nota" id="e-nota"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="painel" id="horarios" aria-labelledby="h-hor">
+    <header><h2 id="h-hor">Horários e endereço</h2></header>
+    <div class="corpo onde">
+      <div class="onde-dados">
+        <table class="semana num" id="semana" aria-label="Horário de funcionamento"></table>
+        <div class="endereco" id="endereco"></div>
+      </div>
+      <div class="mapa" id="mapa"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape" id="rodape"></footer>
+<nav class="barra" id="barra" aria-label="Agendar"></nav>
+
+<script type="application/json" id="dados">{
+  "nome": "Clínica Odontológica Arcos",
+  "nicho": "odonto",
+  "bairro": "Jardim Aquarius",
+  "cidade": "São José dos Campos",
+  "endereco": "Jardim Aquarius, São José dos Campos - SP",
+  "maps": "",
+  "telefone": "(12) 98211-7988",
+  "whatsapp": "5512982117988",
+  "nota": 4.9,
+  "totalAvaliacoes": 126,
+  "avaliacoes": [
+    {
+      "autor": "Fernanda R.",
+      "nota": 5,
+      "texto": "Tinha pavor de dentista e saí da primeira consulta tranquila. A doutora explicou cada etapa antes de fazer qualquer coisa e respeitou meu tempo.",
+      "quando": "há 3 semanas"
+    },
+    {
+      "autor": "Carlos M.",
+      "nota": 5,
+      "texto": "Marquei pelo site num domingo à noite e na segunda cedo já tinham confirmado pelo WhatsApp. Consultório impecável e pontual.",
+      "quando": "há 1 mês"
+    },
+    {
+      "autor": "Patrícia L.",
+      "nota": 5,
+      "texto": "Fiz limpeza e clareamento com eles. Atendimento atencioso, sem empurrar procedimento, e tudo explicado com calma.",
+      "quando": "há 2 meses"
+    },
+    {
+      "autor": "João V.",
+      "nota": 4,
+      "texto": "Ótimo atendimento e estrutura nova. Só achei difícil estacionar perto em horário de pico.",
+      "quando": "há 4 meses"
+    }
+  ],
+  "fotos": [],
+  "horarios": [
+    {
+      "dia": "Segunda-feira",
+      "horario": "08:00–18:00"
+    },
+    {
+      "dia": "Terça-feira",
+      "horario": "08:00–18:00"
+    },
+    {
+      "dia": "Quarta-feira",
+      "horario": "08:00–18:00"
+    },
+    {
+      "dia": "Quinta-feira",
+      "horario": "08:00–20:00"
+    },
+    {
+      "dia": "Sexta-feira",
+      "horario": "08:00–18:00"
+    },
+    {
+      "dia": "Sábado",
+      "horario": "08:00–12:00"
+    },
+    {
+      "dia": "Domingo",
+      "horario": "Fechado"
+    }
+  ],
+  "fonte": "exemplo",
+  "agencia": {
+    "nome": "",
+    "whatsapp": "5512982117988",
+    "projeto_pages": "previas-sites"
+  },
+  "video": {
+    "src": "hero.mp4",
+    "poster": "hero.jpg"
+  }
+}</script>
+<script>
+const NICHOS = {
+  estetica: { rotulo: "Estética", cor: "#b5174f", tinta: "#ffffff", servicos: [
+    ["Avaliação facial", 40, "Consulta para analisar a pele e conversar sobre as opções de cuidado."],
+    ["Limpeza de pele", 60, "Higienização com extração, esfoliação e hidratação."],
+    ["Peeling químico", 45, "Aplicação controlada de ácidos na camada superficial da pele."],
+    ["Bioestimulador de colágeno", 50, "Procedimento injetável, indicado após avaliação individual."],
+    ["Microagulhamento", 60, "Procedimento com microagulhas, feito com anestésico tópico."],
+    ["Drenagem linfática", 60, "Massagem manual com movimentos leves e ritmados."],
+  ]},
+  odonto: { rotulo: "Odontologia", cor: "#005fa3", tinta: "#ffffff", servicos: [
+    ["Consulta e avaliação", 40, "Exame clínico completo e plano de tratamento."],
+    ["Limpeza e profilaxia", 45, "Remoção de tártaro e placa bacteriana, com polimento."],
+    ["Clareamento dental", 60, "Clareamento no consultório ou com moldeira para casa."],
+    ["Restauração", 50, "Tratamento de cáries com resina da cor do dente."],
+    ["Ortodontia", 40, "Avaliação para aparelho fixo ou alinhadores."],
+    ["Implantes", 40, "Avaliação para repor dentes com implante."],
+  ]},
+  fisio: { rotulo: "Fisioterapia", cor: "#f5c400", tinta: "#111111", servicos: [
+    ["Avaliação fisioterapêutica", 50, "Conversa, testes e um plano de tratamento."],
+    ["Fisioterapia ortopédica", 50, "Atendimento para lesões, dores e pós-operatório."],
+    ["RPG", 50, "Sessões do método de reeducação postural global."],
+    ["Pilates clínico", 50, "Exercícios de Pilates com acompanhamento do fisioterapeuta."],
+    ["Fisioterapia esportiva", 50, "Atendimento a atletas e praticantes de esporte."],
+    ["Liberação miofascial", 40, "Técnica manual aplicada sobre músculos e fáscias."],
+  ]},
+  nutri: { rotulo: "Nutrição", cor: "#17733a", tinta: "#ffffff", servicos: [
+    ["Consulta inicial", 60, "Avaliação de hábitos, exames e objetivos."],
+    ["Retorno", 40, "Ajuste do plano alimentar e acompanhamento."],
+    ["Bioimpedância", 20, "Medição de gordura, massa magra e hidratação."],
+    ["Nutrição esportiva", 60, "Plano alimentar para quem treina."],
+    ["Reeducação alimentar", 60, "Acompanhamento para mudança de hábitos alimentares."],
+    ["Consulta online", 50, "Atendimento por vídeo, de onde você estiver."],
+  ]},
+  psico: { rotulo: "Psicologia", cor: "#4a2db0", tinta: "#ffffff", servicos: [
+    ["Primeira sessão", 50, "Conversa inicial para entender o que você procura."],
+    ["Psicoterapia individual", 50, "Sessões semanais para adultos."],
+    ["Terapia de casal", 60, "Um espaço para o casal conversar, com mediação."],
+    ["Atendimento online", 50, "Sessões por vídeo, com o mesmo sigilo."],
+    ["Orientação de pais", 50, "Apoio a pais e responsáveis."],
+    ["Psicoterapia para adolescentes", 50, "Atendimento para jovens de 12 a 17 anos."],
+  ]},
+};
+
+const ICONES = {
+  seta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>',
+  wa: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>',
+  tel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+  mapa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  estrela: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8z" fill="currentColor"/></svg>',
+  estrelaVazia: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>',
+};
+
+// ---------- dados ----------
+let D;
+let escolher = () => {};
+try { D = JSON.parse(document.getElementById("dados").textContent); } catch { D = null; }
+if (!D) {
+  // Template aberto direto (sem passar pelo gerador): usa o exemplo local
+  fetch("exemplo.json").then(r => r.json()).then(iniciar);
+} else iniciar(D);
+
+function iniciar(dados) {
+  D = dados;
+  const html = document.documentElement;
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "animate" in Element.prototype) {
+    html.classList.add("anima");
+    setTimeout(abertura, 2500); // se as fontes demorarem, a página não fica escondida
+  }
+  const nicho = NICHOS[D.nicho] || NICHOS.estetica;
+  const servicos = (D.servicos || nicho.servicos).map(s => Array.isArray(s) ? { nome: s[0], dur: s[1], desc: s[2] } : s);
+  const fotos = D.fotos || [];
+  const avals = D.avaliacoes || [];
+  const ehExemplo = D.fonte === "exemplo";
+  const fmtNota = n => n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const contato = D.whatsapp ? { tipo: "wa", href: wa(D.whatsapp, `Olá! Vim pelo site da ${D.nome} e gostaria de mais informações.`), rotulo: "WhatsApp" }
+    : D.telefone ? { tipo: "tel", href: "tel:" + D.telefone.replace(/[^\d+]/g, ""), rotulo: "Ligar" } : null;
+
+  document.documentElement.style.setProperty("--campo", nicho.cor);
+  document.documentElement.style.setProperty("--campo-tinta", nicho.tinta);
+  document.title = `${D.nome} · ${nicho.rotulo}${D.bairro ? " em " + D.bairro : ""}`;
+  $("#marca-nome").textContent = D.nome;
+  $("#e-clinica").textContent = D.nome;
+
+  // Faixa da agência (só aparece em demonstração)
+  const ag = D.agencia || {};
+  if (D.fonte) {
+    const faixa = $("#agencia");
+    const txt = ehExemplo
+      ? "Clínica fictícia de exemplo. Com os dados do seu negócio no Google, o site fica assim, mas com o seu nome, suas fotos e suas avaliações."
+      : `Demonstração feita para ${D.nome} com informações públicas${D.fonte === "google" ? " do Google" : ""}. Os tratamentos listados são exemplos.`;
+    faixa.append(el("span", {}, txt));
+    if (ag.whatsapp) {
+      const link = el("a", { class: "agencia-link", href: wa(ag.whatsapp, `Oi! Vi a demonstração do site${ehExemplo ? "" : " da " + D.nome} e quero saber mais.`), target: "_blank", rel: "noopener" }, `Quero este site${ag.nome ? " · " + ag.nome : ""}`);
+      link.insertAdjacentHTML("beforeend", ICONES.seta);
+      faixa.append(link);
+    }
+    faixa.hidden = false;
+  }
+
+  // Abertura
+  $("#local").append(el("b", {}, nicho.rotulo), ...[D.bairro, D.cidade].filter(Boolean).length ? [el("span", {}, [D.bairro, D.cidade].filter(Boolean).join(", "))] : []);
+  if (D.video) {
+    $("#abertura").classList.add("com-foto");
+    $("#abertura").append(el("figure", { class: "capa video" }, videoHero()));
+  } else if (fotos.length) {
+    $("#abertura").classList.add("com-foto");
+    $("#abertura").append(figura(fotos[0], "capa", true));
+  }
+  ajustarNome(D.nome);
+
+  // Faixa de dados
+  const fx = $("#faixa");
+  let celulas = 0;
+  if (D.nota) {
+    celulas++;
+    fx.append(el("div", { class: "celula" },
+      el("span", { class: "rotulo" }, "Nota no Google"),
+      el("div", { class: "nota-linha" },
+        el("span", { class: "nota-num num" }, fmtNota(D.nota)),
+        el("span", { class: "nota-meta" }, estrelas(D.nota), el("br"), `${D.totalAvaliacoes.toLocaleString("pt-BR")} ${D.totalAvaliacoes === 1 ? "avaliação" : "avaliações"}`))));
+  }
+  const hoje = new Date();
+  const intHoje = intervalosDoDia(hoje);
+  if (intHoje) {
+    celulas++;
+    const aberto = estaAberto(intHoje, hoje);
+    fx.append(el("div", { class: "celula" },
+      el("span", { class: "rotulo" }, `Hoje, ${hoje.toLocaleDateString("pt-BR", { weekday: "long" }).replace("-feira", "")}`),
+      el("span", { class: "hoje-val num" }, ...(intHoje.length ? textoHorario(hoje).split(/,\s*/).map(p => el("span", { style: "display:block;white-space:nowrap" }, p)) : ["Fechado"])),
+      el("span", { class: "estado" + (aberto ? " aberto" : "") }, el("i"), aberto ? "Aberto agora" : "Fechado agora")));
+  }
+  const acao = el("a", { class: "acao", href: "#agendar" },
+    el("span", {}, el("strong", {}, "Agendar horário"), el("small", {}, contato?.tipo === "wa" ? "Escolha aqui e confirme pelo WhatsApp" : "Escolha o horário e fale com a clínica")));
+  acao.insertAdjacentHTML("beforeend", ICONES.seta);
+  fx.append(acao);
+  if (celulas === 1) fx.classList.add("so-uma");
+  if (celulas === 0) fx.style.gridTemplateColumns = "1fr";
+
+  // Tratamentos
+  $("#lista-trat").append(...servicos.map((s, i) => {
+    const b = el("button", { class: "btn-linha", type: "button" }, "Agendar");
+    b.insertAdjacentHTML("beforeend", ICONES.seta);
+    b.addEventListener("click", () => { escolher("trat", i); $("#agendar").scrollIntoView(); });
+    return el("li", {}, el("h3", {}, s.nome), el("p", {}, s.desc), el("span", { class: "dur num" }, `${s.dur} min`), b);
+  }));
+
+  // Fotos
+  // com vídeo no hero, todas as fotos reais vão para a galeria
+  const galeria = fotos.slice(D.video ? 0 : 1, D.video ? 7 : 8);
+  if (galeria.length) {
+    $("#galeria").append(...galeria.map(f => figura(f)));
+    $("#fotos").hidden = false;
+  }
+
+  // Avaliações
+  if (avals.length) {
+    $("#avaliacoes").hidden = false;
+    if (D.nota) $("#aval-resumo").textContent = `Nota ${fmtNota(D.nota)} em ${D.totalAvaliacoes.toLocaleString("pt-BR")} avaliações.`;
+    $("#avals").append(...avals.map(a => {
+      const longo = a.texto.length > 320;
+      const q = el("blockquote", {}, longo ? a.texto.slice(0, 300).replace(/\s+\S*$/, "") + "…" : a.texto);
+      const pe = el("footer", {}, estrelas(a.nota), el("b", {}, a.autor), a.quando ? el("span", {}, a.quando) : "");
+      const art = el("figure", { class: "aval", style: "margin:0" }, q, pe);
+      if (longo) {
+        const mais = el("button", { class: "mais", type: "button", "aria-expanded": "false" }, "Ler tudo");
+        mais.addEventListener("click", () => { q.textContent = a.texto; mais.remove(); });
+        art.insertBefore(mais, pe);
+      }
+      return art;
+    }));
+    const fonte = $("#fonte-aval");
+    fonte.append(ehExemplo ? "Avaliações fictícias, só para ilustrar." : "Avaliações publicadas por pacientes no Google.");
+    if (D.maps && !ehExemplo) fonte.append(el("a", { href: D.maps, target: "_blank", rel: "noopener" }, "Ver todas no Google Maps"));
+  }
+
+  // Navegação
+  const secoes = [["tratamentos", "Tratamentos"], ["fotos", "Fotos"], ["avaliacoes", "Avaliações"], ["horarios", "Horários"]];
+  $("#nav").append(...secoes.filter(([id]) => !$("#" + id).hidden).map(([id, t]) => el("a", { href: "#" + id }, t)));
+
+  // Agendamento
+  montarAgenda(servicos, contato);
+
+  // Horários e endereço
+  const DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"];
+  const idxHoje = (hoje.getDay() + 6) % 7;
+  if (D.horarios?.length) {
+    $("#semana").append(...D.horarios.map((h, i) => el("tr", { class: i === idxHoje ? "hoje" : "" },
+      el("td", {}, h.dia.replace("-feira", "") + (i === idxHoje ? " (hoje)" : "")), el("td", {}, h.horario))));
+  } else $("#semana").hidden = true;
+  const end = $("#endereco");
+  if (D.endereco) end.append(el("address", {}, D.endereco));
+  const botoes = el("div", { class: "botoes" });
+  if (D.maps || D.endereco) botoes.append(botao(D.maps || "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(D.endereco), "Abrir no Google Maps", ICONES.mapa));
+  if (D.telefone) botoes.append(botao("tel:" + D.telefone.replace(/[^\d+]/g, ""), D.telefone, ICONES.tel));
+  end.append(botoes);
+  if (D.endereco) {
+    $("#mapa").append(el("iframe", { title: "Mapa com a localização da clínica", loading: "lazy", referrerpolicy: "no-referrer-when-downgrade",
+      src: "https://www.google.com/maps?output=embed&q=" + encodeURIComponent(D.endereco) }));
+  } else $("#mapa").hidden = true;
+
+  // Rodapé e barra do celular
+  $("#rodape").append(
+    el("span", {}, el("b", {}, D.nome), D.endereco ? " · " + D.endereco : ""),
+    el("span", {}, ehExemplo ? `Clínica fictícia.${creditosLivres(fotos)}` : D.fonte === "google" ? "Nota, avaliações e fotos: Google." : "Nota e avaliações: Google."));
+  const barra = $("#barra");
+  const bA = el("a", { class: "b-agendar", href: "#agendar" }, "Agendar");
+  barra.append(bA);
+  if (contato) {
+    const bC = el("a", { class: "b-contato", href: contato.href, ...(contato.tipo === "wa" ? { target: "_blank", rel: "noopener" } : {}), "aria-label": contato.tipo === "wa" ? "Falar no WhatsApp" : "Ligar para a clínica" });
+    bC.insertAdjacentHTML("beforeend", contato.tipo === "wa" ? ICONES.wa : ICONES.tel);
+    bC.append(contato.rotulo);
+    barra.append(bC);
+  } else barra.style.gridTemplateColumns = "1fr";
+
+  if (html.classList.contains("anima")) revelar();
+}
+
+// ---------- agendamento ----------
+function montarAgenda(servicos, contato) {
+  const est = { trat: null, dia: null, hora: null };
+  const semHorarios = !D.horarios?.length;
+  const dias = [];
+  for (let i = 0; dias.length < 14; i++) {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + i);
+    const slots = horariosDisponiveis(d, semHorarios);
+    if (i === 0 && !slots.length) continue;
+    dias.push({ d, slots });
+  }
+  $("#leg-hora").textContent = semHorarios ? "Período preferido" : "Horário preferido";
+  $("#agendar-sub").textContent = contato?.tipo === "wa"
+    ? "Monte seu pedido aqui. Ele vai pronto para o WhatsApp da clínica, que confirma o horário."
+    : "Monte seu pedido aqui e informe à clínica pelo telefone.";
+
+  const chip = (txt, sel, attrs = {}) => el("button", { type: "button", class: "chip", "aria-pressed": String(sel), ...attrs }, ...[].concat(txt));
+  const dataCurta = d => d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  const dataLonga = d => d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
+  function render(campoMudou) {
+    $("#c-trat").replaceChildren(...servicos.map((s, i) => chip(s.nome, est.trat === i, { "data-i": i })));
+    $("#c-dia").replaceChildren(...dias.map(({ d, slots }, i) => chip(
+      [dataCurta(d), el("small", {}, slots.length ? d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "") : "fechado")],
+      est.dia === i, { "data-i": i, class: "chip dia", ...(slots.length ? {} : { disabled: "" }) })));
+    if (est.dia !== null) $("#c-hora").replaceChildren(...dias[est.dia].slots.map(h => chip(h, est.hora === h, { "data-h": h })));
+    const s = servicos[est.trat];
+    preencher("#e-trat", s ? `${s.nome} · ${s.dur} min` : null, "a escolher", campoMudou === "trat");
+    preencher("#e-dia", est.dia !== null ? dataLonga(dias[est.dia].d) : null, "a escolher", campoMudou === "dia");
+    preencher("#e-hora", est.hora, "a escolher", campoMudou === "dia" || campoMudou === "hora");
+    preencher("#e-nome", $("#c-nome").value.trim() || null, "opcional", campoMudou === "nome");
+    $("#enviar").disabled = !(contato && s && est.dia !== null && est.hora);
+  }
+  function preencher(sel, val, vazio, animar) {
+    const dd = $(sel);
+    dd.textContent = val || vazio;
+    dd.classList.toggle("pendente", !val);
+    if (animar && val) { dd.classList.remove("impresso"); void dd.offsetWidth; dd.classList.add("impresso"); }
+  }
+  escolher = (campo, v) => {
+    est[campo] = v;
+    if (campo === "dia") est.hora = null;
+    render(campo);
+  };
+
+  $("#c-trat").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) escolher("trat", +b.dataset.i); });
+  $("#c-dia").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b && !b.disabled) escolher("dia", +b.dataset.i); });
+  $("#c-hora").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) escolher("hora", b.dataset.h); });
+  let t; $("#c-nome").addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => render("nome"), 350); });
+
+  const env = $("#enviar");
+  if (!contato) {
+    env.append("Contato indisponível");
+    $("#e-nota").textContent = "Esta clínica não tem telefone no Google.";
+  } else if (contato.tipo === "wa") {
+    env.append("Enviar pelo WhatsApp"); env.insertAdjacentHTML("beforeend", ICONES.wa);
+    $("#e-nota").textContent = "A clínica responde pelo WhatsApp para confirmar.";
+  } else {
+    env.append(`Ligar: ${D.telefone}`); env.insertAdjacentHTML("beforeend", ICONES.tel);
+    $("#e-nota").textContent = "Esta clínica atende por telefone. Diga o tratamento, o dia e o horário que você escolheu.";
+  }
+  env.addEventListener("click", () => {
+    const s = servicos[est.trat], nome = $("#c-nome").value.trim();
+    if (contato.tipo === "tel") { location.href = contato.href; return; }
+    const txt = `Olá! Vim pelo site e gostaria de agendar:\n\nTratamento: ${s.nome}\nDia: ${dataLonga(dias[est.dia].d)}\n${semHorarios ? "Período" : "Horário"} preferido: ${est.hora}${nome ? `\nNome: ${nome}` : ""}\n\nPode confirmar?`;
+    window.open(wa(D.whatsapp, txt), "_blank", "noopener");
+  });
+  render();
+}
+
+// ---------- horários ----------
+function semAcento(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+function linhaDoDia(d) {
+  if (!D.horarios?.length) return null;
+  const alvo = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"][d.getDay()];
+  return D.horarios.find(h => semAcento(h.dia).startsWith(alvo)) || null;
+}
+function textoHorario(d) { return linhaDoDia(d)?.horario || ""; }
+// [[inicioMin, fimMin], ...]; [] = fechado; null = sem dado
+function intervalosDoDia(d) {
+  const l = linhaDoDia(d);
+  if (!l) return null;
+  if (/24 horas/i.test(l.horario)) return [[0, 1440]];
+  const ints = [];
+  for (const m of l.horario.matchAll(/(\d{1,2}):(\d{2})\D+?(\d{1,2}):(\d{2})/g)) {
+    const a = +m[1] * 60 + +m[2]; let b = +m[3] * 60 + +m[4];
+    if (b <= a) b += 1440;
+    ints.push([a, b]);
+  }
+  return ints;
+}
+function estaAberto(ints, agora) {
+  const m = agora.getHours() * 60 + agora.getMinutes();
+  return ints.some(([a, b]) => m >= a && m < b);
+}
+function horariosDisponiveis(d, semHorarios) {
+  const ehHoje = d.toDateString() === new Date().toDateString();
+  const agora = new Date(), minAgora = agora.getHours() * 60 + agora.getMinutes();
+  if (semHorarios) {
+    if (d.getDay() === 0) return [];
+    return ["Manhã", "Tarde", "Noite"].filter((_, i) => !ehHoje || minAgora < [11, 16, 20][i] * 60);
+  }
+  const ints = intervalosDoDia(d) || [];
+  const slots = [];
+  for (const [a, b] of ints) {
+    for (let m = Math.ceil(a / 60) * 60; m <= Math.min(b, 1440) - 60; m += 60) {
+      if (ehHoje && m < minAgora + 60) continue;
+      slots.push(`${String(m / 60).padStart(2, "0")}:00`);
+    }
+  }
+  return slots;
+}
+
+// ---------- nome que preenche a largura ----------
+function ajustarNome(nome) {
+  const h1 = $("#nome");
+  const palavras = nome.split(/\s+/).filter(Boolean);
+  // fixed: um medidor absoluto alargaria a área rolável no celular com nomes longos
+  const medidor = el("span", { "aria-hidden": "true", style: "position:fixed;top:0;left:0;pointer-events:none;visibility:hidden;white-space:nowrap;font-weight:850;letter-spacing:-.02em;font-size:100px" });
+  document.body.append(medidor);
+  function largura(txt, wdth) {
+    medidor.style.fontVariationSettings = `"wdth" ${wdth}`;
+    medidor.textContent = txt;
+    return medidor.getBoundingClientRect().width;
+  }
+  // divide as palavras em n linhas com comprimentos parecidos
+  function dividir(n) {
+    if (n === 1) return [palavras.join(" ")];
+    let melhor = null;
+    (function rec(ini, restantes, acc) {
+      if (restantes === 1) {
+        const linhas = [...acc, palavras.slice(ini).join(" ")];
+        const pior = Math.max(...linhas.map(l => l.length));
+        if (!melhor || pior < melhor.pior) melhor = { linhas, pior };
+        return;
+      }
+      for (let fim = ini + 1; fim <= palavras.length - restantes + 1; fim++) rec(fim, restantes - 1, [...acc, palavras.slice(ini, fim).join(" ")]);
+    })(0, n, []);
+    return melhor.linhas;
+  }
+  function aplicar() {
+    const campo = h1.parentElement;
+    const cs = getComputedStyle(campo);
+    const W = campo.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const movel = innerWidth < 1000;
+    const altMax = Math.max(innerHeight * (movel ? .42 : .5), 180);
+    const piso = movel ? 52 : 88;
+    const maxLinhas = Math.min(movel ? 4 : 3, palavras.length);
+    // O nome vai na largura mais expandida que ainda mantenha um tamanho de cartaz;
+    // nomes longos (comuns em clínicas) só caem para larguras condensadas abaixo do piso.
+    let melhor = null, maiorDeTodos = null;
+    for (const wdth of [125, 112, 100, 87, 75, 68]) {
+      for (let n = 1; n <= maxLinhas; n++) {
+        const linhas = dividir(n);
+        const maior = Math.max(...linhas.map(l => largura(l, wdth)));
+        const tam = Math.min(100 * W / maior, altMax / (n * .9), 260);
+        const c = { tam, wdth, linhas };
+        if (!melhor || tam > melhor.tam) melhor = c;
+        if (!maiorDeTodos || tam > maiorDeTodos.tam) maiorDeTodos = c;
+      }
+      if (melhor.tam >= piso) break;
+      melhor = null;
+    }
+    melhor ||= maiorDeTodos;
+    const tam = Math.floor(melhor.tam * .985);
+    // não recria as linhas se nada mudou (o ResizeObserver dispara ao observar e mataria a animação de abertura)
+    const chave = `${tam}|${melhor.wdth}|${melhor.linhas.join("/")}`;
+    if (chave === ultimaChave) return;
+    ultimaChave = chave;
+    h1.style.fontSize = tam + "px";
+    h1.style.fontVariationSettings = `"wdth" ${melhor.wdth}`;
+    h1.replaceChildren(...melhor.linhas.map(l => el("span", {}, l)));
+    h1.setAttribute("aria-label", nome);
+    h1.classList.add("ajustado");
+  }
+  let ultimaChave = "";
+  h1.textContent = nome;
+  document.fonts.ready.then(() => {
+    aplicar();
+    abertura();
+    let r; new ResizeObserver(() => { cancelAnimationFrame(r); r = requestAnimationFrame(aplicar); }).observe(h1.parentElement);
+  });
+}
+
+// ---------- motion ----------
+// A página nasce visível; só com JS e sem "reduzir movimento" ela ganha a classe .anima.
+// .pronto libera os estados iniciais escondidos; as animações seguram o quadro inicial com fill "backwards".
+const SAI = "cubic-bezier(.16, 1, .3, 1)";
+function abertura() {
+  const html = document.documentElement;
+  if (!html.classList.contains("anima") || html.classList.contains("pronto")) return;
+  html.classList.add("pronto");
+  const anim = (alvo, quadros, opts) => alvo?.animate(quadros, { easing: SAI, fill: "backwards", ...opts });
+
+  // 1. o campo de cor entra como uma passada de tinta
+  anim($(".campo"), [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)" }], { duration: 650, easing: "cubic-bezier(.7, 0, .2, 1)" });
+  anim($(".capa"), [{ clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)" }], { duration: 760, delay: 220 });
+  anim($(".capa img"), [{ transform: "scale(1.08)" }, { transform: "scale(1)" }], { duration: 1500, delay: 220 });
+
+  // 2. o nome é prensado: sobe da linha de base enquanto a largura da letra se expande até a final
+  const h1 = $("#nome"), largura = h1.style.fontVariationSettings;
+  [...h1.children].forEach((linha, i) => anim(linha, [
+    { opacity: 0, transform: "translateY(.4em)", clipPath: "inset(0 0 100% 0)", fontVariationSettings: '"wdth" 62' },
+    { opacity: 1, transform: "none", clipPath: "inset(0 0 -25% 0)", fontVariationSettings: largura },
+  ], { duration: 900, delay: 300 + i * 85 }));
+  anim($("#local"), [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 650 });
+
+  // 3. a faixa de dados acende célula a célula e a nota real conta até o valor do Google
+  [...$("#faixa").children].forEach((c, i) => anim(c, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 620 + i * 80 }));
+  const num = $(".nota-num");
+  if (num && D.nota) contar(num, D.nota, 1100, 720);
+  anim($("#barra"), [{ transform: "translateY(100%)" }, { transform: "none" }], { duration: 500, delay: 900 });
+}
+function contar(alvo, valor, duracao, atraso) {
+  const fmt = n => n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const final = fmt(valor);
+  alvo.textContent = fmt(0);
+  const t0 = performance.now() + atraso;
+  const passo = t => {
+    const p = Math.min(Math.max((t - t0) / duracao, 0), 1);
+    alvo.textContent = p === 1 ? final : fmt(valor * (1 - Math.pow(2, -10 * p)));
+    if (p < 1) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+function revelar() {
+  document.querySelectorAll(".trat li, .fotos figure").forEach(e => e.style.setProperty("--i", Math.min([...e.parentElement.children].indexOf(e), 7)));
+  const paineis = document.querySelectorAll(".painel");
+  if (!("IntersectionObserver" in window)) return paineis.forEach(p => p.classList.add("visto"));
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("visto"); io.unobserve(e.target); }
+  }), { rootMargin: "0px 0px -10% 0px" });
+  paineis.forEach(p => io.observe(p));
+}
+
+// ---------- utilidades ----------
+function $(s) { return document.querySelector(s); }
+function wa(num, txt) { return `https://wa.me/${num}?text=${encodeURIComponent(txt)}`; }
+function el(tag, attrs = {}, ...filhos) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) if (v !== undefined && v !== null) e.setAttribute(k, v);
+  e.append(...filhos.flat().filter(f => f !== "" && f != null));
+  return e;
+}
+function estrelas(n) {
+  // fracionária de propósito: arredondar 4,6 para 5 estrelas exageraria a nota real da clínica
+  const s = el("span", { class: "estrelas", role: "img", "aria-label": `${String(n).replace(".", ",")} de 5 estrelas` });
+  const linha = ico => Array(5).fill(ico).join("");
+  s.innerHTML = `<span class="estrelas-base">${linha(ICONES.estrelaVazia)}</span><span class="estrelas-cheias" style="clip-path: inset(0 ${100 - n / 5 * 100}% 0 0)">${linha(ICONES.estrela)}</span>`;
+  return s;
+}
+// fotos livres (CC BY / BY-SA) exigem autoria e licença: listadas uma vez no rodapé
+function creditosLivres(fotos) { const c = fotos.map(f => f.credito).filter(Boolean); return c.length ? ` Fotos ilustrativas: ${c.join("; ")}.` : ""; }
+function botao(href, txt, ico) {
+  const a = el("a", { class: "btn-linha", href, ...(href.startsWith("http") ? { target: "_blank", rel: "noopener" } : {}) }, txt);
+  a.insertAdjacentHTML("afterbegin", ico);
+  return a;
+}
+function videoHero() {
+  const v = el("video", { src: D.video.src, poster: D.video.poster, playsinline: "", preload: "auto", "aria-hidden": "true" });
+  v.muted = true; // sem som; com "reduzir movimento" fica parado no pôster (o quadro final)
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) v.autoplay = true;
+  // a compressão do vídeo desloca a cor do fundo em alguns pontos: a moldura copia a cor real do quadro, sem costura
+  v.addEventListener("loadeddata", () => {
+    try {
+      const c = document.createElement("canvas"); c.width = c.height = 1;
+      const g = c.getContext("2d"); g.drawImage(v, 4, 4, 1, 1, 0, 0, 1, 1);
+      const [r, gg, bb] = g.getImageData(0, 0, 1, 1).data;
+      v.parentElement.style.background = `rgb(${r} ${gg} ${bb})`;
+    } catch {}
+  }, { once: true });
+  return v;
+}
+function figura(f, cls = "", prioridade = false) {
+  // no exemplo, a foto diz só "ilustrativa" (autor e licença ficam no rodapé); nos demos reais, a autoria do Google
+  const credito = D.fonte === "exemplo" ? "Foto ilustrativa" : `Foto${f.credito ? ": " + f.credito : ""} · ${f.origem || "Google"}`;
+  return el("figure", { class: cls },
+    el("img", { src: f.url, alt: `Foto de ${D.nome}`, loading: prioridade ? "eager" : "lazy", decoding: "async", referrerpolicy: "no-referrer" }),
+    el("figcaption", { class: "credito" }, credito));
+}
+</script>
+</body>
+</html>
